@@ -10,11 +10,6 @@ Build
 -----
 makefile in project folder
 
-Process
--------
-What we did and why
-
-
 Problem
 -------
 formal definition and discussion of actual problem
@@ -26,3 +21,15 @@ input
 output
 ------
 1 example output
+
+Process
+-------
+What we did and why
+
+Performance
+-----------
+How they preform
+
+Submission
+----------
+A PDF for your final project is due on November 27, in class, and a short presentation of the project in class on December 2 or December 4.
