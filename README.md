@@ -14,8 +14,11 @@ Each line will be a separate quartet tree, in Newick format, with a weight that 
 For example, the following could be an input:
 
 (a,(b,(c,d))) 4
+
 (a,(c,(d,e))) 0.5
+
 (b,(c,(d,e))) 2.7
+
 ((a,e),(b,c)) 0.4
 
 
