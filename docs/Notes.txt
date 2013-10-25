@@ -1,0 +1,16 @@
+*About:
+This file contains notes as I read through the research docs that I find important. I will also list the main algorithms behind each document, its approach, and its running time.
+
+*MaxCut:
+
+*Methods Study:
+
+*Performance Study:
+
+*PTAS:
+
+*Quartet Cleaning:
+
+*Quartet Puzzling:
+
+*Weight Optimization:
