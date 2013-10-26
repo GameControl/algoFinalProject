@@ -1,7 +1,26 @@
-*About:
+*****
+About
+*****
 This file contains notes as I read through the research docs that I find important. I will also list the main algorithms behind each document, its high-level approach, and running time.
 
-*MaxCut:
+
+******************
+Current Approaches
+******************
+1) Matrix representation with parsimony (MRP)
+MRP encodes source trees as a matrix of partial binary characters: all entries in the matrix are 0, 1, or ?, with each column in the matrix defined by a single edge in a source tree. The matrix is then analyzed using a heuristic for the NP hard maximum parsimony problem [22].
+
+2) Quartets MaxCut (QMC)
+QMC is a quartet amalgamation method, operating in polynomial time and providing no guarantees with respect to its optimization problem, MQC. The source trees are encoded by sets of quartet trees, and QMC is applied to the union of these sets.
+
+3) Quartet encodings of source trees
+The work presented here explored several techniques for representing source trees by sets of quartet trees. Two of these techniques use random sampling strategies [14], which are based upon computation of the topological distance between leaves in the source tree. The topological diameter of a quartet tree q with respect to a source tree t (denoted diamt(q)) is the maximum of its leaf-to-leaf topological distances within t. The quartet encoding strategies used in [14] also included calculation of the Topologically-Short Quartet (TSQ) trees, defined as follows. For each edge in a source tree, pick the topologically nearest leaves in each of the subtrees around the edge. If two or more leaves within a subtree have the same topological distance to the edge, pick all such leaves. The set of quartet trees formed by picking one such leaf from each subtree forms the TSQs around that edge. The union of all these is the set of TSQ trees.
+
+
+***************
+Notes on Papers
+***************
+MaxCut:
 1) Distinguish between rooted and unrooted phylogenetic trees. In unrooted trees, the decision problem of whether there exists a tree that satisfies (or consistent with) all the input subtrees was shown to be NP-hard by Steel [31] (see Section 2.1 for an exact definition). However, in the same paper, it is shown that if the trees are rooted then this problem is solvable in polynomial time by a simple divide and conquer algorithm of Aho et al. [1]. This makes the rooted settings computationally attractive. However, a rooted setting is problematic due to the fact that the knowledge of the root is sometimes absent and an incorrect root estimation can lead to an erroneous tree. For that reason, despite its computational drawback, people resort to an unrooted setting.
 
 2) The Algorithm (High Level):
@@ -11,19 +30,19 @@ Our method is based on a two-level heuristic approach: In the higher level, the 
 We remark that we cannot guarantee running time of the algorithm or the fraction of satisfied quartets since its core is the heuristic MaxCut which we have no bounds on its performance or time complexity.
 
 
-*Methods Study:
+Methods Study:
 
 
-*Performance Study:
+Performance Study:
 
 
-*PTAS:
+PTAS:
 
 
-*Quartet Cleaning:
+Quartet Cleaning:
 
 
-*Quartet Puzzling:
+Quartet Puzzling:
 
 
-*Weight Optimization:
+Weight Optimization:
