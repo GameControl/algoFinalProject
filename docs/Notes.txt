@@ -1,16 +1,29 @@
 *About:
-This file contains notes as I read through the research docs that I find important. I will also list the main algorithms behind each document, its approach, and its running time.
+This file contains notes as I read through the research docs that I find important. I will also list the main algorithms behind each document, its high-level approach, and running time.
 
 *MaxCut:
+1) Distinguish between rooted and unrooted phylogenetic trees. In unrooted trees, the decision problem of whether there exists a tree that satisfies (or consistent with) all the input subtrees was shown to be NP-hard by Steel [31] (see Section 2.1 for an exact definition). However, in the same paper, it is shown that if the trees are rooted then this problem is solvable in polynomial time by a simple divide and conquer algorithm of Aho et al. [1]. This makes the rooted settings computationally attractive. However, a rooted setting is problematic due to the fact that the knowledge of the root is sometimes absent and an incorrect root estimation can lead to an erroneous tree. For that reason, despite its computational drawback, people resort to an unrooted setting.
+
+2) The Algorithm (High Level):
+Our method is based on a two-level heuristic approach: In the higher level, the quartet consistency problem is solved by the recursive, divide, and conquer high-level algorithm (described in Section 2.5), and in the lower level a heuristic SDP-like (http://en.wikipedia.org/wiki/Semidefinite_programming) engine is employed for solving a MaxCut instance at every recursive stage of the algorithm (described in Section 2.5). Upon returning from the recursion, the two subsolutions need to be merged into a full tree over the whole taxa set while satisfying the greatest number of quartets. This raises a technical challenge that we solve.
+
+3) Running Time:
+We remark that we cannot guarantee running time of the algorithm or the fraction of satisfied quartets since its core is the heuristic MaxCut which we have no bounds on its performance or time complexity.
+
 
 *Methods Study:
 
+
 *Performance Study:
+
 
 *PTAS:
 
+
 *Quartet Cleaning:
 
+
 *Quartet Puzzling:
+
 
 *Weight Optimization:
