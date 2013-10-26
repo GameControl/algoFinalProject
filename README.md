@@ -33,7 +33,7 @@ makefile in project folder
 
 Problem
 -------
-formal definition and discussion of actual problem
+We are designing a Quartet amalgamation method (a method that constructs a supertree when all source trees are four-leaf trees)
 
 input
 -----
