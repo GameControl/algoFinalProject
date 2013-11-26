@@ -54,9 +54,8 @@ public class MWQT{
       e.printStackTrace();
     }
 
-    while(qmc.hasNextLine()){
-      System.out.println(qmc.nextLine());
-    }
+    //do something with input
+
   }
 
 

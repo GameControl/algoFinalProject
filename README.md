@@ -54,3 +54,10 @@ How they preform
 Submission
 ----------
 A PDF for your final project is due on November 27, in class, and a short presentation of the project in class on December 2 or December 4.
+
+NOTES
+-----
+need Algo to determine set A
+need to choose/create DS for Tree
+
+NNI
