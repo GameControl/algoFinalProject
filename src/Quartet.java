@@ -7,9 +7,9 @@ public class Quartet{
   Integer right1;
   Integer right2;
 
-  int weight;
+  float weight;
 
-  public Quartet(int a, int b, int c, int d, int wgt){
+  public Quartet(int a, int b, int c, int d, float wgt){
     left1 = Integer.valueOf(a);
     left2 = b;
     right1 = c;
