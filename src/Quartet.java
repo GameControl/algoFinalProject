@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Quartet{
 
@@ -6,15 +7,22 @@ public class Quartet{
   Integer left2;
   Integer right1;
   Integer right2;
-
+  String name;
   float weight;
 
   public Quartet(int a, int b, int c, int d, float wgt){
     left1 = Integer.valueOf(a);
-    left2 = b;
-    right1 = c;
-    right2 = d;
+    left2 = Integer.valueOf(b);
+    right1 = Integer.valueOf(c);
+    right2 = Integer.valueOf(d);
     weight = wgt;
+    ArrayList<String> nameMaker = new ArrayList<String>();
+    nameMaker.add(left1.toString());
+    nameMaker.add(left2.toString());
+    nameMaker.add(right1.toString());
+    nameMaker.add(right2.toString());
+    Collections.sort(nameMaker);
+    
   }
 
   public boolean satisfies(ArrayList<Integer> left, ArrayList<Integer> right){
@@ -31,6 +39,8 @@ public class Quartet{
     return output;
   }
 
-
+  public String getName(){
+    return name;
+  }
 
 }
