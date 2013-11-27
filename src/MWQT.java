@@ -1,6 +1,9 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Scanner;
+import java.util.ArrayList;
+
+import java.util.HashMap;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -13,7 +16,12 @@ public class MWQT{
 
     File inFile = new File(args[0]);
     int count = taxaCount(inFile);
+    HashMap<String, ArrayList<Quartet> > quartets = getQuartets(inFile);
     File qmcFile = new File(callQMC(count));
+    //for(String s: quartets.keySet()){
+      //System.out.println(s + " : " + quartets.get(s));
+      
+    //}
     readQMC(qmcFile);
 
 
@@ -71,6 +79,36 @@ public class MWQT{
       e.printStackTrace();
     }
     return cwd + "/qmc/tree-" + taxa + ".dat";
+  }
+
+  private static HashMap<String, ArrayList<Quartet> > getQuartets(File inFile){
+    Scanner in = null;
+    try{
+      in = new Scanner(inFile);
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    HashMap<String, ArrayList<Quartet> > data = new HashMap<String, ArrayList<Quartet> >();
+    while(in.hasNextLine()){
+      String line = in.nextLine();
+      String[] divided = line.split(";");
+      float wgt = Float.valueOf(divided[1].trim());
+      line = divided[0];
+      line = line.replaceAll("\\(","");
+      line = line.replaceAll("\\)","");
+      divided = line.split(",");
+      Quartet qt = new Quartet(Integer.valueOf(divided[0]),Integer.valueOf(divided[1]),Integer.valueOf(divided[2]),Integer.valueOf(divided[3]), wgt);
+      ArrayList<Quartet> list;
+      if(data.containsKey(qt.getName())){
+        list = data.get(qt.getName());
+      }
+      else{
+        list = new ArrayList<Quartet>();
+      }
+        list.add(qt);
+        data.put(qt.getName(), list);
+    }
+    return data;
   }
 
 }

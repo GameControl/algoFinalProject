@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
 public class Tree{
   
   ArrayList<Edge> edges;

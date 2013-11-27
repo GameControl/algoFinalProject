@@ -16,13 +16,16 @@ public class Quartet{
     right1 = Integer.valueOf(c);
     right2 = Integer.valueOf(d);
     weight = wgt;
-    ArrayList<String> nameMaker = new ArrayList<String>();
-    nameMaker.add(left1.toString());
-    nameMaker.add(left2.toString());
-    nameMaker.add(right1.toString());
-    nameMaker.add(right2.toString());
+    ArrayList<Integer> nameMaker = new ArrayList<Integer>();
+    nameMaker.add(left1);
+    nameMaker.add(left2);
+    nameMaker.add(right1);
+    nameMaker.add(right2);
     Collections.sort(nameMaker);
-    
+    name = "";
+    for(Integer s: nameMaker){
+      name += ":" + s.toString();
+    }
   }
 
   public boolean satisfies(ArrayList<Integer> left, ArrayList<Integer> right){
@@ -41,6 +44,11 @@ public class Quartet{
 
   public String getName(){
     return name;
+  }
+
+  @Override
+  public String toString(){
+    return "((" +left1.toString() + "," + left2.toString() + "),("+ right1.toString() + "," + right2.toString()+ "))";
   }
 
 }
