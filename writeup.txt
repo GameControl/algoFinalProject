@@ -8,5 +8,46 @@
 
   10% discussion of what is known about the problem and heuristics for the problem
 
-Maximum Weight Quartet Tree
+
+
+
+
+
+
+
+Maximum Weight Quartet Compatibility
+
+  We choose the Maximum Weight Quartet Compatibility problem. Simply put, it is an extention of the parsomony problem, where we now care about the relative weights of the quartets more than the quantity of quartets we satisfy.
+
+Our basic approach:
+
+Generate some graph T with the appropriate number of leaves
+{
+  Create T’ = {set of all neighbors of T}
+  Max = max { T, T’ }
+  if Max == T
+    return T
+  else
+    recurse on Max
+}
+
+MWQT.java
+  Our driver class. It is a static class that consists of main, and many helper methods. It is the glue that puts together our approaches many pieces.
+
+  1)Reads input to determine the number of taxa
+  2)Calls QMC to generate a random starting graph
+  3)Generates a map of Quartets 
+  4)Generates the Tree object(T)
+  4)Calls the tree methods findMaxNeighbor method that returns the best neighbor to this tree(T'). This is our heuristic. It is purely a greedy approach.
+  5)If T == T' we return T
+  6)Else we go to 4 and use T' to generate the T.
+
+Tree.java
+  A collection of Edges to make it easier to work with them.
+
+Edge.java
+  A data structure that stores the edge data. It is able to generate its own neighbors using NNI. It is able to tell the delta-score for each neighbor.
+
+Quartet.java
+  A data structure for storing quartets and their information. A quartet has a method to if it is satisfied or not
 
