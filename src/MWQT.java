@@ -23,7 +23,8 @@ public class MWQT{
       
     //}
     readQMC(qmcFile);
-
+    String cwd = System.getProperty("user.dir");
+    Tree.startParse(cwd + "/qmc/tree-37.dat", 37);
 
     //do{
       //generate a tree with QMC
