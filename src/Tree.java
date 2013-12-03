@@ -91,14 +91,21 @@ public class Tree{
   			return "At root!";
   		}
 
-  		if(left.equals(""))
-  			a.add("" + (vCount-1));
-  		else
-  			a.add(left);
-  		if(right.equals(""))
-  			a.add("" + (vCount-1));
-  		else
-  			a.add(right);
+      if(left.equals("") && right.equals("")){
+        a.add("" + (vCount - labelInternalChild((Integer)(vCount-1), 1) - 1));
+        a.add("" + (vCount-1));
+      }
+      else {
+    		if(left.equals(""))
+    			a.add("" + (vCount-1));
+        else
+    			a.add(left);
+
+        if(right.equals(""))
+          a.add("" + (vCount-1));
+    		else
+          a.add(right);
+      }
 
   		// Check children of root
   		if(leftChildCheck(str))
@@ -155,6 +162,23 @@ public class Tree{
   	}
   	a.add("");
   	adjList.put((internalCount*2), a);
+  }
+
+  private static int labelInternalChild(Integer node, int depth){
+    Integer leftChild = Integer.parseInt(adjList.get(node).get(0));
+    Integer rightChild = Integer.parseInt(adjList.get(node).get(1));
+
+    // Base Case
+    if(leftChild <= internalCount && rightChild <= internalCount)
+      return depth;
+
+    if(leftChild > internalCount && rightChild > internalCount)
+      return labelInternalChild(leftChild, depth+1) + labelInternalChild(rightChild, depth+1);
+
+    if(leftChild > internalCount)
+      return labelInternalChild(leftChild, depth+1);
+    else
+      return labelInternalChild(rightChild, depth+1);
   }
 
   // (For Debug) Print out the adjacency list
