@@ -173,7 +173,7 @@ public class Tree{
       return depth;
 
     if(leftChild > internalCount && rightChild > internalCount)
-      return labelInternalChild(leftChild, depth+1) + labelInternalChild(rightChild, depth+1);
+      return labelInternalChild(leftChild, depth+1) + labelInternalChild(rightChild, depth);
 
     if(leftChild > internalCount)
       return labelInternalChild(leftChild, depth+1);
