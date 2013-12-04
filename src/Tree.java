@@ -7,11 +7,19 @@ public class Tree{
   ArrayList<Edge> edges;
 
   // Adjacency List
-  public static Map<Integer, ArrayList<String>> adjList = null;
-  private static int internalCount = 0;
-  private static int vCount = 0;
 
-  public Tree(int size, Scanner inFile){
+  public Tree(int size, String inFile){
+    Map<Integer, ArrayList<Integer> > adjList = new HashMap<Integer, ArrayList<Integer>>();
+    startParse(adjList, inFile, size);
+//    ArrayList<Integer> nodeList = adjList.getKey();
+//    for()
+
+
+
+
+
+
+
   }
 
   // B switch with C == 0
@@ -20,126 +28,106 @@ public class Tree{
   public Tree(Edge e, Tree tIn, int switchType){
   }
 
-  public static void startParse(String file, int taxaCount){
-  	System.out.println("TaxaCount: " + taxaCount);
-  	adjList = new HashMap<Integer, ArrayList<String>>();
-  	try {
+  private static void startParse(Map<Integer, ArrayList<Integer> > adjList, String file, int taxaCount){
+    int internalCount = 0;
+    int[] vCount = {0};
+    System.out.println("TaxaCount: " + taxaCount);
+    try {
         Scanner scanner = new Scanner(new File(file));
         String tree = scanner.nextLine();
         System.out.println("Input tree: " + tree);
         internalCount = countInternal(tree);
-        System.out.println("InternalCount: " + internalCount);
-        vCount = internalCount + 1;
-        String s = parseTree(tree, taxaCount+1);
+        vCount[0] = internalCount + 1;
+        parseTree(tree, internalCount, vCount, adjList);
         scanner.close();
     } 
     catch (FileNotFoundException e) {
         e.printStackTrace();
     }
+    ArrayList<Integer> dummy = new ArrayList<Integer>();
+    dummy.add(null);
+    dummy.add(null);
+    for(int i = 0; i <= internalCount; i++){
+      adjList.put(i , new ArrayList<Integer>(dummy));
+    }
+    labelParents(adjList, internalCount);
     printAdjList(adjList);
   }
 
-  private static String parseTree(String str, int count){
-  	System.out.println("\nCurrent str: " + str);
-  	System.out.println("Current count: " + count);
-  	String left = "";
-  	String right = "";
+  private static String parseTree(String str, int internalCount, int[] vCount, Map<Integer, ArrayList<Integer> > adjList){
+    Integer left = null;
+    Integer right = null;
 
- 	  if(str.substring(0,1).equals("(")) {
-      System.out.println("Found '('");
+    if(str.substring(0,1).equals("(")) {
       str = str.substring(1);
-      System.out.println("Moved curser forward: " + str);
       if(str.substring(0,1).equals("(")) {
-        System.out.println("Left node requires recursion");
-        //str = str.substring(1);
-        str = parseTree(str, count+1);
+        str = parseTree(str, internalCount, vCount, adjList);
       }
       else {
-        System.out.println("Left node is a leaf: " + str.charAt(0));
-        left = str.substring(0,1);
-        str = str.substring(1);
-      }
-    }
-  	
-  	if(str.substring(0,1).equals(",")) {
-  		System.out.println("Found ','");
-  		str = str.substring(1);
-  		System.out.println("Moved curser forward: " + str);
-  		if(str.substring(0,1).equals("(")) {
-  			System.out.println("Right node requires recursion");
-  			//str = str.substring(1);
-  			str = parseTree(str, count);
-  		}
-      if(!str.substring(0,1).equals(",") && !str.substring(0,1).equals("(") && !str.substring(0,1).equals(")") && !str.substring(0,1).equals(";")){
-    		System.out.println("Right node is a leaf: " + str.charAt(0));
-    		int i = str.indexOf(")");
-        right = str.substring(0,i);
+        int i = str.indexOf(",");
+        left = Integer.valueOf(str.substring(0,i));
         str = str.substring(i);
       }
-  	}
+    }
+    
+    if(str.substring(0,1).equals(",")) {
+      str = str.substring(1);
+      if(str.substring(0,1).equals("(")) {
+        str = parseTree(str, internalCount, vCount, adjList);
+      }
+      if(!str.substring(0,1).equals(",") && !str.substring(0,1).equals("(") && !str.substring(0,1).equals(")") && !str.substring(0,1).equals(";")){
+        int i = str.indexOf(")");
+        right = Integer.valueOf(str.substring(0,i));
+        str = str.substring(i);
+      }
+    }
 
-  	if(str.substring(0,1).equals(")")) {
-  		System.out.println("Found ')'");
-  		System.out.println("lc: " + left);
-  		System.out.println("rc: " + right);
-  		str = str.substring(1);
-  		ArrayList<String> a = new ArrayList<String>();
+    if(str.substring(0,1).equals(")")) {
+      str = str.substring(1);
+      ArrayList<Integer> a = new ArrayList<Integer>();
 
-  		// Check for root first
-  		if(str.substring(0,1).equals(";")) {
-  			addRoot();
-  			return "At root!";
-  		}
-
-      if(left.equals("") && right.equals("")){
-        a.add("" + (vCount - labelInternalChild((Integer)(vCount-1), 1) - 1));
-        a.add("" + (vCount-1));
+      // Add left and right children for internal vertices with subtrees underneath them
+      if(left==null && right==null){
+        int[] answer = {0};
+        labelInternalChild(vCount[0]-1, answer, internalCount, adjList);
+        int rcCount = answer[0];
+        a.add(vCount[0] - rcCount - 1);
+        a.add(vCount[0]-1);
       }
       else {
-    		if(left.equals(""))
-    			a.add("" + (vCount-1));
+        // Add left child
+        if(left==null)
+          a.add(vCount[0]-1);
         else
-    			a.add(left);
-
-        if(right.equals(""))
-          a.add("" + (vCount-1));
-    		else
+          a.add(left);
+        // Add right child
+        if(right==null)
+          a.add(vCount[0]-1);
+        else
           a.add(right);
       }
-
-  		// Check children of root
-  		if(leftChildCheck(str))
-  			a.add("" + (internalCount*2));
-  		else
-  			a.add("" + (vCount+1));
-
-  		adjList.put(vCount, a);
-      vCount++;
-  		//str = parseTree(str, count+1);
-  	}
-
-  	if(str.substring(0,1).equals(";")) {
-  		System.out.println("Found ';'");
-  	}
-
-    System.out.println("**Returning: " + str);
-  	return str;
+      adjList.put(vCount[0], a);
+      vCount[0]++;
+    }
+    return str;
   }
 
-  private static boolean leftChildCheck(String str){
-  	int lp = 0;
-  	int rp = 0;
-  	while(str.length() > 0){
-	  	if(str.substring(0,1).equals("("))
-	  		lp++;
-	  	if(str.substring(0,1).equals(")"))
-	  		rp++;
-	  	str = str.substring(1);
-  	}
-  	if((rp-lp) == 1)
-  		return true;
-  	else
-  		return false;
+  private static void labelParents(Map<Integer, ArrayList<Integer> > adjList, int internalCount){
+    for (Map.Entry<Integer, ArrayList<Integer> > entry : adjList.entrySet()) {
+      Integer key = entry.getKey();
+      if(!(entry.getValue().get(0) == null)){
+        Integer lc = entry.getValue().get(0);
+        if(adjList.containsKey(lc))
+          adjList.get(lc).add(key);
+      }
+      if(!(entry.getValue().get(1) == null)){
+        Integer rc = entry.getValue().get(1);
+        if(adjList.containsKey(rc))
+          adjList.get(rc).add(key);
+        if(key == internalCount *2)
+          entry.getValue().add(null);
+      }
+    }
   }
 
   private static int countInternal(String tree){
@@ -152,40 +140,21 @@ public class Tree{
   	return count;
   }
 
-  private static void addRoot(){
-  	ArrayList<String> a = new ArrayList<String>();
-  	for (Map.Entry<Integer, ArrayList<String>> entry : adjList.entrySet()) {
-  		Integer key = entry.getKey();
-  		String parent = entry.getValue().get(2);
-  		if(!adjList.containsKey(Integer.parseInt(parent)))
-  			a.add("" + key);
-  	}
-  	a.add("");
-  	adjList.put((internalCount*2), a);
-  }
-
-  private static int labelInternalChild(Integer node, int depth){
-    Integer leftChild = Integer.parseInt(adjList.get(node).get(0));
-    Integer rightChild = Integer.parseInt(adjList.get(node).get(1));
-
-    // Base Case
-    if(leftChild <= internalCount && rightChild <= internalCount)
-      return depth;
-
-    if(leftChild > internalCount && rightChild > internalCount)
-      return labelInternalChild(leftChild, depth+1) + labelInternalChild(rightChild, depth);
-
-    if(leftChild > internalCount)
-      return labelInternalChild(leftChild, depth+1);
-    else
-      return labelInternalChild(rightChild, depth+1);
+  private static void labelInternalChild(Integer node, int[] depth, int internalCount, Map<Integer, ArrayList<Integer> > adjList){
+    if(node > internalCount){
+      Integer leftChild = adjList.get(node).get(0);
+      Integer rightChild = adjList.get(node).get(1);
+      depth[0]++;
+      labelInternalChild(leftChild, depth, internalCount, adjList);
+      labelInternalChild(rightChild, depth, internalCount, adjList);
+    }
   }
 
   // (For Debug) Print out the adjacency list
-  static void printAdjList(Map<Integer, ArrayList<String>> l) {
+  private static void printAdjList(Map<Integer, ArrayList<Integer>> l) {
   	System.out.println("\n");
   	System.out.println("Adjacency List:");
-  	for (Map.Entry<Integer, ArrayList<String>> entry : l.entrySet()) {
+  	for (Map.Entry<Integer, ArrayList<Integer>> entry : l.entrySet()) {
   		Integer key = entry.getKey();
       System.out.println(key + " (" + entry.getValue().get(0) + "," 
         + entry.getValue().get(1) + ") (" + entry.getValue().get(2) + ")");

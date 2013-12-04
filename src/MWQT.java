@@ -22,9 +22,7 @@ public class MWQT{
       //System.out.println(s + " : " + quartets.get(s));
       
     //}
-    readQMC(qmcFile);
-    String cwd = System.getProperty("user.dir");
-    Tree.startParse(cwd + "/qmc/intree", 11);
+    Tree myTree = new Tree(count, callQMC(count));
 
     //do{
       //generate a tree with QMC
@@ -62,6 +60,7 @@ public class MWQT{
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
+    String line = qmc.nextLine();
 
     //do something with input
 

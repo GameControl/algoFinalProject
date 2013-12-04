@@ -1,19 +1,41 @@
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Edge{
 
-  ArrayList<Integer> above;
-  ArrayList<Integer> below;
+  ArrayList<Integer> a;
+  ArrayList<Integer> b;
 
-  public Edge(ArrayList<Integer> under, int total){
-    above = new ArrayList<Integer>();
-    below = new ArrayList<Integer>();
-    for(Integer i = 0; i <=total; i++){
-      if(under.contains(i)){
-        below.add(i);
-      }
-      else
-        above.add(i);
+  ArrayList<Integer> c;
+  ArrayList<Integer> d;
+
+
+  public Edge(Map<Integer, ArrayList<Integer> > adjList, Integer bottomVertex){
+    a = new ArrayList<Integer>();
+    b = new ArrayList<Integer>();
+    c = new ArrayList<Integer>();
+    d = new ArrayList<Integer>();
+    Integer topVertex = adjList.get(bottomVertex).get(2);
+    Integer bnode;
+    ArrayList<Integer> topData = adjList.get(topVertex);
+    if(topData.get(1).equals(bottomVertex))
+      bnode = topData.get(0);
+    else
+      bnode = topData.get(1);
+
+    listMaker(c, adjList, adjList.get(bottomVertex).get(0));
+    listMaker(d, adjList, adjList.get(bottomVertex).get(1));
+    listMaker(b, adjList, bnode);
+
+  }
+
+  private static void listMaker(ArrayList<Integer> bucket , Map<Integer, ArrayList<Integer> > adjList, Integer node){
+    ArrayList<Integer> myNode = adjList.get(node);
+    if(myNode.get(0).equals(""))
+      bucket.add(node);
+    else{
+      listMaker(bucket, adjList, myNode.get(0));
+      listMaker(bucket, adjList, myNode.get(1));
     }
   }
 
