@@ -10,7 +10,7 @@ public class Edge{
   ArrayList<Integer> d;
 
 
-  public Edge(Map<Integer, ArrayList<Integer> > adjList, Integer bottomVertex){
+  public Edge(Map<Integer, ArrayList<Integer> > adjList, Integer bottomVertex, int leafCount){
     a = new ArrayList<Integer>();
     b = new ArrayList<Integer>();
     c = new ArrayList<Integer>();
@@ -26,6 +26,16 @@ public class Edge{
     listMaker(c, adjList, adjList.get(bottomVertex).get(0));
     listMaker(d, adjList, adjList.get(bottomVertex).get(1));
     listMaker(b, adjList, bnode);
+
+    for(Integer i = 0; i <= leafCount; i++){
+      if(!(c.contains(i) || d.contains(i) || b.contains(i)))
+        a.add(i);
+    }
+    System.out.println("a: " + a);
+    System.out.println("b: " + b);
+    System.out.println("c: " + c);
+    System.out.println("d: " + d);
+
 
   }
 

@@ -11,6 +11,7 @@ import java.io.IOException;
 public class MWQT{
 
   private static final String QMC_EXE = "/qmc/genTreeAndQuartets-Linux-64";
+  private static final String RANDOM = "0";
 
   public static void main(String[] args){
 
@@ -70,7 +71,7 @@ public class MWQT{
   public static String callQMC(int taxa){
     taxa++;
     String cwd = System.getProperty("user.dir");
-    String cmd = cwd + QMC_EXE + " " + taxa + " 0 0 1\n";
+    String cmd = cwd + QMC_EXE + " " + taxa + " 0 0 "+ RANDOM + "\n";
     //System.out.println(cmd);
     try{
       Process p = Runtime.getRuntime().exec(cmd, null, new File(cwd + "/qmc/"));

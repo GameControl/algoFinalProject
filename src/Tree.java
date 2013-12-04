@@ -10,13 +10,33 @@ public class Tree{
 
   public Tree(int size, String inFile){
     Map<Integer, ArrayList<Integer> > adjList = new HashMap<Integer, ArrayList<Integer>>();
-    startParse(adjList, inFile, size);
+    int[] internalCount = {0};
+    startParse(adjList, inFile, size, internalCount);
 //    ArrayList<Integer> nodeList = adjList.getKey();
 //    for()
 
+    printAdjList(adjList);
+/*
+    System.out.println("EDGE (8)");
+    {
+    Edge testEdge = new Edge(adjList, 8, size);
+    }
+    System.out.println("EDGE (6)");
+    {
+    Edge testEdge = new Edge(adjList, 6, size);
+    }
+    System.out.println("EDGE (9)");
+    {
+    Edge testEdge = new Edge(adjList, 9, size);
+    }
+    System.out.println("EDGE (7)");
 
+    Edge testEdge = new Edge(adjList, 7, size);*/
 
-
+    for(Integer i = size+1; i < ((internalCount[0]*2)-1); i++){
+      System.out.println("\nEDGE " + i);
+      Edge testEdge = new Edge(adjList, i, size);
+    }
 
 
 
@@ -28,17 +48,16 @@ public class Tree{
   public Tree(Edge e, Tree tIn, int switchType){
   }
 
-  private static void startParse(Map<Integer, ArrayList<Integer> > adjList, String file, int taxaCount){
-    int internalCount = 0;
+  private static void startParse(Map<Integer, ArrayList<Integer> > adjList, String file, int taxaCount, int[] internalCount){
     int[] vCount = {0};
     System.out.println("TaxaCount: " + taxaCount);
     try {
         Scanner scanner = new Scanner(new File(file));
         String tree = scanner.nextLine();
         System.out.println("Input tree: " + tree);
-        internalCount = countInternal(tree);
-        vCount[0] = internalCount + 1;
-        parseTree(tree, internalCount, vCount, adjList);
+        internalCount[0] = countInternal(tree);
+        vCount[0] = internalCount[0] + 1;
+        parseTree(tree, internalCount[0], vCount, adjList);
         scanner.close();
     } 
     catch (FileNotFoundException e) {
@@ -47,11 +66,23 @@ public class Tree{
     ArrayList<Integer> dummy = new ArrayList<Integer>();
     dummy.add(null);
     dummy.add(null);
-    for(int i = 0; i <= internalCount; i++){
+    for(int i = 0; i <= internalCount[0]; i++){
       adjList.put(i , new ArrayList<Integer>(dummy));
     }
-    labelParents(adjList, internalCount);
-    printAdjList(adjList);
+    labelParents(adjList, internalCount[0]);
+    fixRoot(adjList, internalCount[0]);
+  }
+
+  private static void fixRoot(Map<Integer, ArrayList<Integer> > adjList, int internalCount){
+    Integer rootName = internalCount * 2;
+    ArrayList<Integer> root = adjList.get(rootName);
+    ArrayList<Integer> child = adjList.get(root.get(0));
+    child.remove(2);
+    child.add(root.get(1));
+    child = adjList.get(root.get(1));
+    child.remove(2);
+    child.add(root.get(0));
+    adjList.remove(rootName);
   }
 
   private static String parseTree(String str, int internalCount, int[] vCount, Map<Integer, ArrayList<Integer> > adjList){
