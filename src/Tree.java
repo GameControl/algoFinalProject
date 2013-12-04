@@ -12,30 +12,11 @@ public class Tree{
     Map<Integer, ArrayList<Integer> > adjList = new HashMap<Integer, ArrayList<Integer>>();
     int[] internalCount = {0};
     startParse(adjList, inFile, size, internalCount);
-//    ArrayList<Integer> nodeList = adjList.getKey();
-//    for()
 
-    printAdjList(adjList);
-/*
-    System.out.println("EDGE (8)");
-    {
-    Edge testEdge = new Edge(adjList, 8, size);
-    }
-    System.out.println("EDGE (6)");
-    {
-    Edge testEdge = new Edge(adjList, 6, size);
-    }
-    System.out.println("EDGE (9)");
-    {
-    Edge testEdge = new Edge(adjList, 9, size);
-    }
-    System.out.println("EDGE (7)");
-
-    Edge testEdge = new Edge(adjList, 7, size);*/
-
+//    printAdjList(adjList);
     for(Integer i = size+1; i < ((internalCount[0]*2)-1); i++){
-      System.out.println("\nEDGE " + i);
       Edge testEdge = new Edge(adjList, i, size);
+      System.out.print(testEdge);
     }
 
 
@@ -50,7 +31,6 @@ public class Tree{
 
   private static void startParse(Map<Integer, ArrayList<Integer> > adjList, String file, int taxaCount, int[] internalCount){
     int[] vCount = {0};
-    System.out.println("TaxaCount: " + taxaCount);
     try {
         Scanner scanner = new Scanner(new File(file));
         String tree = scanner.nextLine();
