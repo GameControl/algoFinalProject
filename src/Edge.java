@@ -31,7 +31,7 @@ public class Edge{
 
   private static void listMaker(ArrayList<Integer> bucket , Map<Integer, ArrayList<Integer> > adjList, Integer node){
     ArrayList<Integer> myNode = adjList.get(node);
-    if(myNode.get(0).equals(""))
+    if(myNode.get(0) == null)
       bucket.add(node);
     else{
       listMaker(bucket, adjList, myNode.get(0));
