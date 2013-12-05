@@ -18,7 +18,6 @@ import java.util.Map;
 public class Edge{
 
   String name;
-
   ArrayList<Integer> a;
   ArrayList<Integer> b;
   ArrayList<Integer> c;
@@ -63,4 +62,12 @@ public class Edge{
     return "EDGE: " + name + "\n" + "a: " + a+ "\n" + "b: " + b+ "\n" + "c: " + c+ "\n" + "d: " + d + "\n";
   }
 
+  public boolean satisfies(Quartet quartet){
+    Integer[] below = quartet.below();
+    Integer[] above = quartet.above();
+    if((c.contains(below[0]) && d.contains(below[1])) || (c.contains(below[1]) && d.contains(below[0]))){
+        return (a.contains(above[0]) && b.contains(above[1])) || (a.contains(above[1]) && b.contains(above[0]));
+      }
+    return false;
+  }
 }

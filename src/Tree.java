@@ -9,6 +9,7 @@ public class Tree{
   // Adjacency List
 
   public Tree(int size, String inFile){
+    edges = new ArrayList<Edge>();
     Map<Integer, ArrayList<Integer> > adjList = new HashMap<Integer, ArrayList<Integer>>();
     int[] internalCount = {0};
     startParse(adjList, inFile, size, internalCount);
@@ -16,7 +17,8 @@ public class Tree{
 //    printAdjList(adjList);
     for(Integer i = size+1; i < ((internalCount[0]*2)-1); i++){
       Edge testEdge = new Edge(adjList, i, size);
-      System.out.print(testEdge);
+      edges.add(testEdge);
+//      System.out.print(testEdge);
     }
 
 
@@ -27,6 +29,10 @@ public class Tree{
   // B switch with D == 1
 
   public Tree(Edge e, Tree tIn, int switchType){
+  }
+
+  public ArrayList<Edge> getEdgeSet(){
+    return edges;
   }
 
   private static void startParse(Map<Integer, ArrayList<Integer> > adjList, String file, int taxaCount, int[] internalCount){

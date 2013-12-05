@@ -24,7 +24,7 @@ public class MWQT{
       
     //}
     Tree myTree = new Tree(count, callQMC(count));
-
+    ArrayList<Edge> theEdges = myTree.getEdgeSet();
     //do{
       //generate a tree with QMC
       //manipulate to find local optima
