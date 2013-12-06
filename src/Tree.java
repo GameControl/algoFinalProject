@@ -8,31 +8,44 @@ public class Tree{
 
   // Adjacency List
 
-  public Tree(int size, String inFile){
+  public Tree(int size, String inFile, HashMap<String, ArrayList<Quartet> > quartets){
     edges = new ArrayList<Edge>();
     Map<Integer, ArrayList<Integer> > adjList = new HashMap<Integer, ArrayList<Integer>>();
     int[] internalCount = {0};
     startParse(adjList, inFile, size, internalCount);
-
 //    printAdjList(adjList);
     for(Integer i = size+1; i < ((internalCount[0]*2)-1); i++){
       Edge testEdge = new Edge(adjList, i, size);
       edges.add(testEdge);
-//      System.out.print(testEdge);
     }
-
-
-
+    scoreEdges(quartets);
   }
 
   // B switch with C == 0
   // B switch with D == 1
 
-  public Tree(Edge e, Tree tIn, int switchType){
-  }
-
   public ArrayList<Edge> getEdgeSet(){
     return edges;
+  }
+
+  public double treeScore(){
+    double score = 0.0;
+    for(Edge e: edges){
+      score += e.getScore();
+    }
+    return score;
+  }
+
+  private void scoreEdges(HashMap<String, ArrayList<Quartet> > quartets){
+    for(Edge e: edges){
+      for(String s: quartets.keySet()){
+        for(Quartet q: quartets.get(s)){
+          if(e.satisfies(q)){
+            e.changeScore(true, q.getWeight());
+          }
+        }
+      }
+    }
   }
 
   private static void startParse(Map<Integer, ArrayList<Integer> > adjList, String file, int taxaCount, int[] internalCount){

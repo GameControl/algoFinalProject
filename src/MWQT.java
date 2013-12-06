@@ -23,15 +23,16 @@ public class MWQT{
       //System.out.println(s + " : " + quartets.get(s));
       
     //}
-    Tree myTree = new Tree(count, callQMC(count));
-    ArrayList<Edge> theEdges = myTree.getEdgeSet();
-    
+    Tree myTree = new Tree(count, callQMC(count), quartets);
     //do{
       //generate a tree with QMC
       //manipulate to find local optima
     //}while you want more
     //score the results
+
     //return the best
+
+    System.out.println("Tree Score: " + myTree.treeScore());
   }
 
   public static int taxaCount(File input){

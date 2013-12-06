@@ -22,13 +22,19 @@ public class Edge{
   ArrayList<Integer> b;
   ArrayList<Integer> c;
   ArrayList<Integer> d;
+  String aSubtree;
+  String bSubtree;
+  String cSubtree;
+  String dSubtree;
 
+  double value;
 
   public Edge(Map<Integer, ArrayList<Integer> > adjList, Integer bottomVertex, int leafCount){
     a = new ArrayList<Integer>();
     b = new ArrayList<Integer>();
     c = new ArrayList<Integer>();
     d = new ArrayList<Integer>();
+    value = 0;
     Integer topVertex = adjList.get(bottomVertex).get(2);
     name = topVertex + "|" + bottomVertex;
     Integer bnode;
@@ -48,6 +54,16 @@ public class Edge{
     }
   }
 
+  public double getScore(){return value;}
+//true adds
+//false subtracts
+  public void changeScore(boolean addSub, double i){
+    if(addSub)
+      value += i;
+    else
+      value -= i;
+  }
+
   private static void listMaker(ArrayList<Integer> bucket , Map<Integer, ArrayList<Integer> > adjList, Integer node){
     ArrayList<Integer> myNode = adjList.get(node);
     if(myNode.get(0) == null)
@@ -59,7 +75,7 @@ public class Edge{
   }
 
   public String toString(){
-    return "EDGE: " + name + "\n" + "a: " + a+ "\n" + "b: " + b+ "\n" + "c: " + c+ "\n" + "d: " + d + "\n";
+    return "EDGE: " + name + "\n" + "a: " + a+ "\n" + "b: " + b+ "\n" + "c: " + c+ "\n" + "d: " + d + "\n" + "Score: " + value + "\n";
   }
 
   public boolean satisfies(Quartet quartet){
@@ -68,6 +84,10 @@ public class Edge{
     if((c.contains(below[0]) && d.contains(below[1])) || (c.contains(below[1]) && d.contains(below[0]))){
         return (a.contains(above[0]) && b.contains(above[1])) || (a.contains(above[1]) && b.contains(above[0]));
       }
+    else if((c.contains(above[0]) && d.contains(above[1])) || (c.contains(above[1]) && d.contains(above[0]))){
+        return (a.contains(below[0]) && b.contains(below[1])) || (a.contains(below[1]) && b.contains(below[0]));
+      }
+
     return false;
   }
 }

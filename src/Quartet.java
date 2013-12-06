@@ -8,9 +8,9 @@ public class Quartet{
   Integer right1;
   Integer right2;
   String name;
-  float weight;
+  double weight;
 
-  public Quartet(int a, int b, int c, int d, float wgt){
+  public Quartet(int a, int b, int c, int d, double wgt){
     left1 = Integer.valueOf(a);
     left2 = Integer.valueOf(b);
     right1 = Integer.valueOf(c);
@@ -28,9 +28,12 @@ public class Quartet{
     }
   }
 
+  public double getWeight(){ return weight;}
+
   public boolean satisfies(ArrayList<Integer> left, ArrayList<Integer> right){
     return (left.contains(left1) && left.contains(left2)) && (right.contains(right1) && right.contains(right2));
   }
+
 
   public Integer[] above(){
     Integer[] output = {left1, left2};
