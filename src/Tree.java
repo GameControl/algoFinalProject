@@ -6,14 +6,14 @@ import java.lang.Comparable;
 
 /*
  * Tree:
- * Class of Edges that represent a tree
- * It is constructed from a Newick string
+ * Class of Edges that represent a tree.
+ * It is constructed from a Newick string and stored as an adjacency list.
  */
 public class Tree implements Comparable<Tree>{
 
-  private ArrayList<Edge> edges;
   // Newick string that represents tree
   private String myName;
+  private ArrayList<Edge> edges;
   private double myScore;
 
   private static boolean isGreedy;
@@ -33,21 +33,21 @@ public class Tree implements Comparable<Tree>{
       Edge testEdge = new Edge(adjList, i, size, myName, myQuartets, greedy);
       edges.add(testEdge);
     }
-    // cause I can be anal
+    // Score a tree once at construction
     myScore = 0.0;
     for(Edge e: edges){
       myScore += e.getScore();
     }
   }
 
-  // private constructor for looking at neighbors
+  // Private constructor for looking at neighbors
   private Tree(String newTree){
     this(mySize, newTree, myQuartets, isGreedy);
   }
 
   public double getScore(){return myScore;}
 
-  // asks each edge for the trees they can make by using NNI and gets the best
+  // Asks each edge for the trees they can make by using NNI and gets the best
   public Tree findBestNeighbor(){
     ArrayList<Edge> options = new ArrayList<Edge>();
     for(Edge e: edges){
@@ -72,12 +72,15 @@ public class Tree implements Comparable<Tree>{
     internalCount[0] = countInternal(tree);
     vCount[0] = internalCount[0] + 1;
     parseTree(tree, internalCount[0], vCount, adjList);
+
+    /* Puts leafs in the adjacency list
     ArrayList<Integer> dummy = new ArrayList<Integer>();
     dummy.add(null);
     dummy.add(null);
     for(int i = 0; i <= internalCount[0]; i++){
       adjList.put(i , new ArrayList<Integer>(dummy));
-    }
+    }*/
+
     labelParents(adjList, internalCount[0]);
     fixRoot(adjList, internalCount[0]);
   }
@@ -99,33 +102,50 @@ public class Tree implements Comparable<Tree>{
   }
 
   /*
-   * Recurses through the Newick string Post-order and builds an adjacency list to represent the tree
+   * Recurses through the Newick string Post-order and builds an adjacency list to represent the tree. This method only adds
+   * internal vertices to the adjacency list.
    */
   private static String parseTree(String str, int internalCount, int[] vCount, Map<Integer, ArrayList<Integer> > adjList){
     Integer left = null;
     Integer right = null;
 
+    // Look for left subtree
     if(str.substring(0,1).equals("(")) {
       str = str.substring(1);
+      // Subtree case
       if(str.substring(0,1).equals("(")) {
         str = parseTree(str, internalCount, vCount, adjList);
       }
+      // Leaf case
       else {
         int i = str.indexOf(",");
         left = Integer.valueOf(str.substring(0,i));
         str = str.substring(i);
+        // Add leaf to the adjacency list
+        ArrayList<Integer> dummy = new ArrayList<Integer>();
+        dummy.add(null);
+        dummy.add(null);
+        adjList.put(left, dummy);
       }
     }
     
+    // Look for right subtree
     if(str.substring(0,1).equals(",")) {
       str = str.substring(1);
+      // Subtree case
       if(str.substring(0,1).equals("(")) {
         str = parseTree(str, internalCount, vCount, adjList);
       }
-      if(!str.substring(0,1).equals(",") && !str.substring(0,1).equals("(") && !str.substring(0,1).equals(")") && !str.substring(0,1).equals(";")){
+      // Leaf case
+      else {
         int i = str.indexOf(")");
         right = Integer.valueOf(str.substring(0,i));
         str = str.substring(i);
+        // Add leaf to the adjacency list
+        ArrayList<Integer> dummy = new ArrayList<Integer>();
+        dummy.add(null);
+        dummy.add(null);
+        adjList.put(right, dummy);
       }
     }
 
@@ -179,7 +199,7 @@ public class Tree implements Comparable<Tree>{
     }
   }
 
-  // Computes a count for the number of edges in the tree
+  // Computes a count for the number of internal vertices in the tree
   private static int countInternal(String tree){
   	int count = 0;
   	while(tree.length() > 1){
@@ -190,7 +210,7 @@ public class Tree implements Comparable<Tree>{
   	return count;
   }
 
-  // A helper method for labeling a case where an internal vertex had subtrees for both its children.
+  // A helper method for labeling a case where an internal vertex has subtrees for both its children.
   private static void labelInternalChild(Integer node, int[] depth, int internalCount, Map<Integer, ArrayList<Integer> > adjList){
     if(node > internalCount){
       Integer leftChild = adjList.get(node).get(0);

@@ -1,6 +1,11 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
+/*
+ * Quartet:
+ * Defines a quartet on the following form:
+    ((A,B),(C,D)); weight
+ */
 public class Quartet{
 
   Integer left1;
@@ -33,7 +38,6 @@ public class Quartet{
   public boolean satisfies(ArrayList<Integer> left, ArrayList<Integer> right){
     return (left.contains(left1) && left.contains(left2)) && (right.contains(right1) && right.contains(right2));
   }
-
 
   public Integer[] above(){
     Integer[] output = {left1, left2};

@@ -8,19 +8,29 @@ import java.io.IOException;
 
 /*
  * MWQT:
- * Driver class for our __ Algorithm. Iterates over the algorithm a given number
- * of times and writes out verbose output.
+ * Driver class for our Maximum Weight Quartet Compatibility algorithm.
+ * Iterates over the algorithm a given number of times and writes verbose 
+ * output to the specified output file.
+ *
+ * I/O:
+ * Input is given in a text file of quartet trees with assigned weights.
+ * Output is a locally optimal tree which satisfies a maximum weight subset of
+ * the input quartets. 
  */
 public class MWQT{
 
   private static final String QMC_EXE = "/qmc/genTreeAndQuartets-Linux-64";
 
-  // We used this to switch between random and non random trees for testing.
-  // QMC takes a 1 for random and 0 for not.
+  /*
+   * We used this to switch between random and non random trees for testing.
+   * QMC takes a 1 for random and 0 for not.
+   */
   private static final String RANDOM = "1";
 
-  // A boolean value for determining if we are greedy with edge neighbors
-  // or tree neighbors 
+  /* 
+   * A boolean value for determining if we are greedy with edge neighbors
+   * or tree neighbors. We are greedy with edges by default.
+   */
   private static boolean greedy = true;
 
   // The number of iterations to run the algorithm 
@@ -47,7 +57,8 @@ public class MWQT{
       long totalTime = 0;
       double totalImprovement = 0.0;
       double bestsImprovement = 0.0;
-      //do multiple iterations over many different random starting trees
+
+      // Do multiple iterations over many different random starting trees
       for(int i = 0; i < iterations; i++){
         outputBuilder.append("--------------ITERATION " + (i+1) + "--------------\n");
         File qmcFile = new File(callQMC(count));
@@ -95,9 +106,10 @@ public class MWQT{
           outputBuilder.append("Time Spent: " + (deltaTime/1000000000.0) + " seconds\n");
           outputBuilder.append("New Tree:\n" + newTree + "\n");
           outputBuilder.append("Score Improvement: " + deltaScore + "\n\n");
-        //This is the second greedy choice we make, no matter what greedy is set to. We only consider the best tree for our next step
+        // This is the second greedy choice we make, no matter what greedy is set to. We only consider the best tree for our next step
         }while(myTree.compareTo(newTree) > 0);
-        //return the best
+
+        // Return the best
         if(myTree.compareTo(ourBest) < 0){
           ourBest = myTree;
           bestsImprovement = (ourBest.getScore()/originalScore - 1.0);
@@ -118,7 +130,7 @@ public class MWQT{
       outputBuilder.append("AVERAGE TIME PER RUN: " + (totalTime/iterations)/1000000000.0 + " seconds\n");
       outputBuilder.append("AVERAGE IMPROVEMENT: " + totalImprovement/iterations + "\n");
       outputBuilder.append("BEST " + ourBest + "\n");
-      outputBuilder.append("BEST'S IMPROVEMENT :" + bestsImprovement + "\n");
+      outputBuilder.append("BEST'S IMPROVEMENT: " + bestsImprovement + "\n");
       fw.append(outputBuilder.toString());
       outputBuilder = new StringBuilder();
       fw.close();
@@ -132,7 +144,7 @@ public class MWQT{
     return greedy;
   }
 
-  //breaks the tree into just numbers. We need to know count for making tree
+  // Breaks the tree into just numbers. We need to know the taxa count for making tree.
   public static int taxaCount(File input){
     int maxSoFar = 0;
     try{
@@ -177,9 +189,6 @@ public class MWQT{
       e.printStackTrace();
     }
     HashMap<String, ArrayList<Quartet> > data = new HashMap<String, ArrayList<Quartet> >();
-    /* A quartet is of the form:
-     * ((A,B),(C,D)); weight
-     */
     while(in.hasNextLine()){
       String line = in.nextLine();
       String[] divided = line.split(";");
