@@ -11,6 +11,8 @@ import java.io.IOException;
 public class MWQT{
 
   private static final String QMC_EXE = "/qmc/genTreeAndQuartets-Linux-64";
+  //We used this to switch between random and non random trees for testing.
+  //QMC takes a 1 for random and 0 for not.
   private static final String RANDOM = "1";
   private static boolean greedy = true;
   private static int iterations = 1;
@@ -25,10 +27,13 @@ public class MWQT{
       if(args[3].equals("-p"))
         greedy = false;
     }
+    StringBuilder outputBuilder = new StringBuilder();
     File inFile = new File(args[0]);
     int count = taxaCount(inFile);
     HashMap<String, ArrayList<Quartet> > quartets = getQuartets(inFile);
+    Tree ourBest = null;
     for(int i = 0; i < iterations; i++){
+      outputBuilder.append("--------------ITERATION " + (i+1) + "--------------\n");
       File qmcFile = new File(callQMC(count));
       String treeNewick = "";
       try {
@@ -39,11 +44,12 @@ public class MWQT{
       catch (FileNotFoundException e) {
           e.printStackTrace();
       }
-      System.out.println("Input tree: " + treeNewick);
       Tree myTree = new Tree(count, treeNewick, quartets, greedy);
+      if(ourBest==null)
+        ourBest = myTree;
       double originalScore = myTree.getScore();
-      System.out.println("Initial Score: " + originalScore);
-      System.out.println();
+      outputBuilder.append("Input tree: " + treeNewick + "\n");
+      outputBuilder.append("Initial Score: " + originalScore + "\n\n");
       Tree newTree = myTree;
       double myScore = originalScore; 
       double newScore = myScore;
@@ -64,21 +70,34 @@ public class MWQT{
         newTree = myTree.findBestNeighbor();
         newScore = newTree.getScore();
         newTime = System.nanoTime();
-        System.out.println("Step Number: " + steps);
-        System.out.println("Time Spent: " + (((double)(newTime - myTime))/1000000000) + " seconds");
-        System.out.println("Score: " + newScore);
-        System.out.println("Score Improvement: " + (newScore/myScore - 1.0));
-        System.out.println("New Tree:\n" + newTree);
-        System.out.println();
+        outputBuilder.append("Step Number: " + steps + "\n");
+        outputBuilder.append("Time Spent: " + (((double)(newTime - myTime))/1000000000) + " seconds\n");
+        outputBuilder.append("Score: " + newScore + "\n");
+        outputBuilder.append("Score Improvement: " + (newScore/myScore - 1.0) + "\n");
+        outputBuilder.append("New Tree:\n" + newTree + "\n\n");
       }while(myTree.compareTo(newTree) > 0);
       //return the best
-      System.out.println();
-      System.out.println("TOTAL STEPS: " + steps);
-      System.out.println("TOTAL TIME: " + (((double)(newTime - startTime))/1000000000) + " seconds");
-      System.out.println("Final tree: " + myTree);
-      System.out.println("Final Tree Score: " + myTree.getScore());
-      System.out.println("Total Score Improvement: " + (myScore/originalScore - 1.0));
+      if(myTree.compareTo(ourBest) < 0)
+        ourBest = myTree;
+      outputBuilder.append("\n");
+      outputBuilder.append("TOTAL STEPS: " + steps + "\n");
+      outputBuilder.append("TOTAL TIME: " + (((double)(newTime - startTime))/1000000000) + " seconds\n");
+      outputBuilder.append("Final tree: " + myTree + "\n");
+      outputBuilder.append("Final Tree Score: " + myTree.getScore() + "\n");
+      outputBuilder.append("Total Score Improvement: " + (myScore/originalScore - 1.0) + "\n\n");
     }
+    outputBuilder.append("===========================================================\n");
+    outputBuilder.append("RESULTS FROM " + iterations + " ITERATION(S):\n");
+    outputBuilder.append("BEST " + ourBest + "\n");
+    outputBuilder.append("BEST TREE SCORE: " + ourBest.getScore() + "\n");
+    try{
+      FileWriter fw = new FileWriter(args[1]);
+      fw.write(outputBuilder.toString());
+      fw.close();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    } 
   }
 
   public static boolean getGreedy(){
@@ -106,25 +125,11 @@ public class MWQT{
     return maxSoFar;
   }
 
-  public static void readQMC(File inFile){
-    Scanner qmc = null;
-    try{
-      qmc = new Scanner(inFile);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
-    String line = qmc.nextLine();
-
-    //do something with input
-
-  }
-
-
+//Calls qmc for a random starting tree
   public static String callQMC(int taxa){
     taxa++;
     String cwd = System.getProperty("user.dir");
     String cmd = cwd + QMC_EXE + " " + taxa + " 0 0 "+ RANDOM + "\n";
-    //System.out.println(cmd);
     try{
       Process p = Runtime.getRuntime().exec(cmd, null, new File(cwd + "/qmc/"));
       p.waitFor();
@@ -134,6 +139,7 @@ public class MWQT{
     return cwd + "/qmc/tree-" + taxa + ".dat";
   }
 
+  //Builds a map of the quartets
   private static HashMap<String, ArrayList<Quartet> > getQuartets(File inFile){
     Scanner in = null;
     try{

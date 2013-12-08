@@ -1,8 +1,173 @@
+Input tree: ((0,1),(2,((3,4),5)));
+Initial Score: 2.3911599814891815
+
+Step Number: 1
+Time Spent: 8.45848E-4 seconds
+Score: 2.3911599814891815
+Score Improvement: 0.0
+New Tree:
+Tree: ((0,1),(2,((3,4),5)));
+Tree Score: 2.3911599814891815
+
+
+TOTAL STEPS: 1
+TOTAL TIME: 8.45848E-4 seconds
+Final tree: Tree: ((0,1),(2,((3,4),5)));
+Tree Score: 2.3911599814891815
+Final Tree Score: 2.3911599814891815
+Total Score Improvement: 0.0
+
+Input tree: (((0,1),(2,(3,4))),5);
+Initial Score: 1.5509999990463257
+
+Step Number: 1
+Time Spent: 0.001316369 seconds
+Score: 2.770999997854233
+Score Improvement: 0.7865892969426544
+New Tree:
+Tree: ((((2,(3,4)),1),0),5);
+Tree Score: 2.770999997854233
+
+Step Number: 2
+Time Spent: 4.74362E-4 seconds
+Score: 2.770999997854233
+Score Improvement: 0.0
+New Tree:
+Tree: ((((2,(3,4)),1),0),5);
+Tree Score: 2.770999997854233
+
+
+TOTAL STEPS: 2
+TOTAL TIME: 0.001790731 seconds
+Final tree: Tree: ((((2,(3,4)),1),0),5);
+Tree Score: 2.770999997854233
+Final Tree Score: 2.770999997854233
+Total Score Improvement: 0.7865892969426544
+
+Input tree: (((0,1),2),(3,(4,5)));
+Initial Score: 2.237000033259392
+
+Step Number: 1
+Time Spent: 2.9892E-4 seconds
+Score: 2.237000033259392
+Score Improvement: 0.0
+New Tree:
+Tree: (((0,1),2),(3,(4,5)));
+Tree Score: 2.237000033259392
+
+
+TOTAL STEPS: 1
+TOTAL TIME: 2.9892E-4 seconds
+Final tree: Tree: (((0,1),2),(3,(4,5)));
+Tree Score: 2.237000033259392
+Final Tree Score: 2.237000033259392
+Total Score Improvement: 0.0
+
+Input tree: (((0,1),2),(3,(4,5)));
+Initial Score: 2.237000033259392
+
+Step Number: 1
+Time Spent: 3.96559E-4 seconds
+Score: 2.237000033259392
+Score Improvement: 0.0
+New Tree:
+Tree: (((0,1),2),(3,(4,5)));
+Tree Score: 2.237000033259392
+
+
+TOTAL STEPS: 1
+TOTAL TIME: 3.96559E-4 seconds
+Final tree: Tree: (((0,1),2),(3,(4,5)));
+Tree Score: 2.237000033259392
+Final Tree Score: 2.237000033259392
+Total Score Improvement: 0.0
+
+Input tree: ((0,1),(2,(3,(4,5))));
+Initial Score: 2.237000033259392
+
+Step Number: 1
+Time Spent: 3.88248E-4 seconds
+Score: 2.237000033259392
+Score Improvement: 0.0
+New Tree:
+Tree: ((0,1),(2,(3,(4,5))));
+Tree Score: 2.237000033259392
+
+
+TOTAL STEPS: 1
+TOTAL TIME: 3.88248E-4 seconds
+Final tree: Tree: ((0,1),(2,(3,(4,5))));
+Tree Score: 2.237000033259392
+Final Tree Score: 2.237000033259392
+Total Score Improvement: 0.0
+
+Input tree: ((0,(1,2)),((3,4),5));
+Initial Score: 1.323859989643097
+
+Step Number: 1
+Time Spent: 0.002688121 seconds
+Score: 2.70059996843338
+Score Improvement: 1.0399437928186366
+New Tree:
+Tree: ((0,5),((3,4),(1,2)));
+Tree Score: 2.70059996843338
+
+Step Number: 2
+Time Spent: 0.001393194 seconds
+Score: 2.770999997854233
+Score Improvement: 0.02606829232161023
+New Tree:
+Tree: ((0,5),(1,((3,4),2)));
+Tree Score: 2.770999997854233
+
+Step Number: 3
+Time Spent: 6.58254E-4 seconds
+Score: 2.770999997854233
+Score Improvement: 0.0
+New Tree:
+Tree: ((0,5),(1,((3,4),2)));
+Tree Score: 2.770999997854233
+
+
+TOTAL STEPS: 3
+TOTAL TIME: 0.004739569 seconds
+Final tree: Tree: ((0,5),(1,((3,4),2)));
+Tree Score: 2.770999997854233
+Final Tree Score: 2.770999997854233
+Total Score Improvement: 1.093121643929487
+
+Input tree: ((0,((1,2),(3,4))),5);
+Initial Score: 2.70059996843338
+
+Step Number: 1
+Time Spent: 0.001235422 seconds
+Score: 2.770999997854233
+Score Improvement: 0.02606829232161023
+New Tree:
+Tree: ((0,(((3,4),2),1)),5);
+Tree Score: 2.770999997854233
+
+Step Number: 2
+Time Spent: 6.52388E-4 seconds
+Score: 2.770999997854233
+Score Improvement: 0.0
+New Tree:
+Tree: ((0,(((3,4),2),1)),5);
+Tree Score: 2.770999997854233
+
+
+TOTAL STEPS: 2
+TOTAL TIME: 0.00188781 seconds
+Final tree: Tree: ((0,(((3,4),2),1)),5);
+Tree Score: 2.770999997854233
+Final Tree Score: 2.770999997854233
+Total Score Improvement: 0.02606829232161023
+
 Input tree: ((0,(1,(2,3))),(4,5));
 Initial Score: 1.826060026884079
 
 Step Number: 1
-Time Spent: 8.01359E-4 seconds
+Time Spent: 0.001208883 seconds
 Score: 2.4355600476264954
 Score Improvement: 0.3337787431788015
 New Tree:
@@ -10,7 +175,7 @@ Tree: ((0,(3,(2,1))),(4,5));
 Tree Score: 2.4355600476264954
 
 Step Number: 2
-Time Spent: 6.35835E-4 seconds
+Time Spent: 7.04559E-4 seconds
 Score: 2.4355600476264954
 Score Improvement: 0.0
 New Tree:
@@ -19,8 +184,60 @@ Tree Score: 2.4355600476264954
 
 
 TOTAL STEPS: 2
-TOTAL TIME: 0.001437194 seconds
+TOTAL TIME: 0.001913442 seconds
 Final tree: Tree: ((0,(3,(2,1))),(4,5));
 Tree Score: 2.4355600476264954
 Final Tree Score: 2.4355600476264954
 Total Score Improvement: 0.3337787431788015
+
+Input tree: ((0,1),(2,((3,4),5)));
+Initial Score: 2.3911599814891815
+
+Step Number: 1
+Time Spent: 0.001184508 seconds
+Score: 2.3911599814891815
+Score Improvement: 0.0
+New Tree:
+Tree: ((0,1),(2,((3,4),5)));
+Tree Score: 2.3911599814891815
+
+
+TOTAL STEPS: 1
+TOTAL TIME: 0.001184508 seconds
+Final tree: Tree: ((0,1),(2,((3,4),5)));
+Tree Score: 2.3911599814891815
+Final Tree Score: 2.3911599814891815
+Total Score Improvement: 0.0
+
+Input tree: (((0,(1,2)),3),(4,5));
+Initial Score: 1.3175000101327896
+
+Step Number: 1
+Time Spent: 0.001894445 seconds
+Score: 2.4355600476264954
+Score Improvement: 0.8486224128233726
+New Tree:
+Tree: (((3,(1,2)),0),(4,5));
+Tree Score: 2.4355600476264954
+
+Step Number: 2
+Time Spent: 7.52609E-4 seconds
+Score: 2.4355600476264954
+Score Improvement: 0.0
+New Tree:
+Tree: (((3,(1,2)),0),(4,5));
+Tree Score: 2.4355600476264954
+
+
+TOTAL STEPS: 2
+TOTAL TIME: 0.002647054 seconds
+Final tree: Tree: (((3,(1,2)),0),(4,5));
+Tree Score: 2.4355600476264954
+Final Tree Score: 2.4355600476264954
+Total Score Improvement: 0.8486224128233726
+
+===========================================================
+RESULTS FROM 10 ITERATION(S):
+BEST Tree: ((((2,(3,4)),1),0),5);
+Tree Score: 2.770999997854233
+BEST TREE SCORE: 2.770999997854233
