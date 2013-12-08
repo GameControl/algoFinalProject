@@ -70,6 +70,7 @@ public class Edge implements Comparable<Edge>{
   }
 
   /*
+   * Performs the NNI swap:
    * if swapType == true, switch B and C
    * if swapType == false, switch B and D
    */
@@ -150,12 +151,13 @@ public class Edge implements Comparable<Edge>{
     return false;
   }
 
-  /* Generates neighbor list, has 2 types of output.
+  /* 
+   * Generates neighbor lists and has 2 types of output.
    * greedy is a big part of eliminating cases that are not better for 
-   * this edge. This is to potentially speed up the program
-   * 1) if greedy then only returns the swap that is best for this edge
-   *    returns an empty list if neither is better for the edge
-   * 2) if not then returns both swaps that could be done around this edge
+   * this edge. This greedy choice is made to reduce runtime.
+   * 1) if greedy, then only returns the swap that is best for this edge.
+   *    (returns an empty list if neither is better for the edge)
+   * 2) if not, then returns both swaps that could be done around this edge
    */
   public ArrayList<Edge> getNeighbor(){
     Edge swapC = new Edge(this, true);
@@ -178,7 +180,7 @@ public class Edge implements Comparable<Edge>{
 
   }
 
-  //Initializes substring variables for each tree
+  // Initializes substring variables for each tree
   private void setSubstrings(String intree){
     String tree = new String(intree);
     int[] index = {0,0};
@@ -204,7 +206,7 @@ public class Edge implements Comparable<Edge>{
     System.out.println("Start: " + nums[0] + "   End: " + nums[1]);
   }
 
-  //gets the indices of the stubtree induced from a set(a,b,c,d)
+  // Gets the indices of the stubtree induced from a set {a,b,c,d}
   private void subtreeHelper(ArrayList<Integer> set, String tree, int[] indices){
     indices[0] = Integer.MAX_VALUE;
     indices[1] = -1;
