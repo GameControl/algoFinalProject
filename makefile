@@ -1,8 +1,12 @@
 test: MWQT
 	java -cp ./bin/ MWQT ./IO/c1.txt > ./IO/output-c1.txt
+#	diff ./IO/expected-c1.txt ./IO/output-c1.txt
 	java -cp ./bin/ MWQT ./IO/r3.txt > ./IO/output-r3.txt 
+#	diff ./IO/expected-r3.txt ./IO/output-r3.txt
 	java -cp ./bin/ MWQT ./IO/r5.txt > ./IO/output-r5.txt
+#	diff ./IO/expected-r5.txt ./IO/output-r5.txt
 	java -cp ./bin/ MWQT ./IO/r20.txt > ./IO/output-r20.txt
+#	diff ./IO/expected-r20.txt ./IO/output-r20.txt
 
 
 
@@ -15,5 +19,5 @@ Tree: Edge
 Quartet:
 	javac -Xlint -cp ./bin/ ./src/Quartet.java -d ./bin/
 
-Edge:
+Edge: 
 	javac -Xlint -cp ./bin/ ./src/Edge.java -d ./bin/

@@ -2,33 +2,64 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
-public class Tree{
+public class Tree implements Comparable<Tree>{
   
-  ArrayList<Edge> edges;
+  private ArrayList<Edge> edges;
+  private String myName;
+  private double myScore;
 
+  private static boolean isGreedy;
+  private static HashMap<String, ArrayList<Quartet> > myQuartets = null;
+  private static int mySize;
   // Adjacency List
 
-  public Tree(int size, String inFile, HashMap<String, ArrayList<Quartet> > quartets){
+  public Tree(int size, String name, HashMap<String, ArrayList<Quartet> > quartets, boolean greedy){
+    isGreedy = greedy;
+    mySize = size;
+    myName = name;
+    myQuartets = quartets;
     edges = new ArrayList<Edge>();
-    Map<Integer, ArrayList<Integer> > adjList = new HashMap<Integer, ArrayList<Integer>>();
+    HashMap<Integer, ArrayList<Integer> > adjList = new HashMap<Integer, ArrayList<Integer>>();
     int[] internalCount = {0};
-    startParse(adjList, inFile, size, internalCount);
-//    printAdjList(adjList);
+    startParse(adjList, myName, mySize, internalCount);
     for(Integer i = size+1; i < ((internalCount[0]*2)-1); i++){
-      Edge testEdge = new Edge(adjList, i, size);
+      Edge testEdge = new Edge(adjList, i, size, myName, myQuartets, greedy);
       edges.add(testEdge);
     }
-    scoreEdges(quartets);
+    myScore = treeScore();
   }
 
-  // B switch with C == 0
-  // B switch with D == 1
+  public Tree(String newTree){
+    this(mySize, newTree, myQuartets, isGreedy);
+  }
 
   public ArrayList<Edge> getEdgeSet(){
     return edges;
   }
 
-  public double treeScore(){
+  public Tree findBestNeighbor(){
+    ArrayList<Edge> options = new ArrayList<Edge>();
+    for(Edge e: edges){
+      options.addAll(e.getNeighbor());
+    }
+    ArrayList<Tree> treeOptions = new ArrayList<Tree>();
+    for(Edge e: options){
+//      System.out.println(e.getTree());
+      treeOptions.add(new Tree(e.getTree()));
+    }
+    Collections.sort(treeOptions);
+    //System.out.println(treeOptions);
+    if(!treeOptions.isEmpty()){
+      Tree best = treeOptions.get(0);
+      if(best.compareTo(this) < 0)
+        return best;
+    }
+    return this;
+  }
+
+  public double getScore(){return myScore;}
+
+  private double treeScore(){
     double score = 0.0;
     for(Edge e: edges){
       score += e.getScore();
@@ -36,32 +67,11 @@ public class Tree{
     return score;
   }
 
-  private void scoreEdges(HashMap<String, ArrayList<Quartet> > quartets){
-    for(Edge e: edges){
-      for(String s: quartets.keySet()){
-        for(Quartet q: quartets.get(s)){
-          if(e.satisfies(q)){
-            e.changeScore(true, q.getWeight());
-          }
-        }
-      }
-    }
-  }
-
-  private static void startParse(Map<Integer, ArrayList<Integer> > adjList, String file, int taxaCount, int[] internalCount){
+  private static void startParse(Map<Integer, ArrayList<Integer> > adjList, String tree, int taxaCount, int[] internalCount){
     int[] vCount = {0};
-    try {
-        Scanner scanner = new Scanner(new File(file));
-        String tree = scanner.nextLine();
-        System.out.println("Input tree: " + tree);
-        internalCount[0] = countInternal(tree);
-        vCount[0] = internalCount[0] + 1;
-        parseTree(tree, internalCount[0], vCount, adjList);
-        scanner.close();
-    } 
-    catch (FileNotFoundException e) {
-        e.printStackTrace();
-    }
+    internalCount[0] = countInternal(tree);
+    vCount[0] = internalCount[0] + 1;
+    parseTree(tree, internalCount[0], vCount, adjList);
     ArrayList<Integer> dummy = new ArrayList<Integer>();
     dummy.add(null);
     dummy.add(null);
@@ -160,6 +170,7 @@ public class Tree{
     }
   }
 
+
   private static int countInternal(String tree){
   	int count = 0;
   	while(tree.length() > 1){
@@ -190,4 +201,21 @@ public class Tree{
         + entry.getValue().get(1) + ") (" + entry.getValue().get(2) + ")");
   	}
   }
+
+  @Override
+  public String toString(){
+    return "Tree: " + myName + "\nTree Score: " + this.treeScore() ;
+  }
+
+  @Override
+  public int compareTo(Tree t) {
+    double diff = this.treeScore() - t.treeScore();
+    if(diff == 0.0)
+      return 0;
+    if(diff > 0.0)
+      return -1;
+    return 1;
+
+  }
+
 }

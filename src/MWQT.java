@@ -11,28 +11,78 @@ import java.io.IOException;
 public class MWQT{
 
   private static final String QMC_EXE = "/qmc/genTreeAndQuartets-Linux-64";
-  private static final String RANDOM = "0";
+  private static final String RANDOM = "1";
+  private static boolean greedy = true;
+  private static int iterations = 1;
 
   public static void main(String[] args){
-
+    if(args.length > 2){
+      int input = Integer.valueOf(args[2]);
+      if(input > 1)
+        iterations = input;
+    }
+    if(args.length >3){
+      if(args[3].equals("-p"))
+        greedy = false;
+    }
     File inFile = new File(args[0]);
     int count = taxaCount(inFile);
     HashMap<String, ArrayList<Quartet> > quartets = getQuartets(inFile);
-    File qmcFile = new File(callQMC(count));
-    //for(String s: quartets.keySet()){
-      //System.out.println(s + " : " + quartets.get(s));
-      
-    //}
-    Tree myTree = new Tree(count, callQMC(count), quartets);
-    //do{
-      //generate a tree with QMC
-      //manipulate to find local optima
-    //}while you want more
-    //score the results
+    for(int i = 0; i < iterations; i++){
+      File qmcFile = new File(callQMC(count));
+      String treeNewick = "";
+      try {
+        Scanner scanner = new Scanner(new File(callQMC(count)));
+        treeNewick = scanner.nextLine();
+        scanner.close();
+      } 
+      catch (FileNotFoundException e) {
+          e.printStackTrace();
+      }
+      System.out.println("Input tree: " + treeNewick);
+      Tree myTree = new Tree(count, treeNewick, quartets, greedy);
+      double originalScore = myTree.getScore();
+      System.out.println("Initial Score: " + originalScore);
+      System.out.println();
+      Tree newTree = myTree;
+      double myScore = originalScore; 
+      double newScore = myScore;
+      long startTime = System.nanoTime();
+      long myTime = startTime;
+      long newTime = startTime;
+      int steps = 0;
+      //do{
+        //generate a tree with QMC
+        //manipulate to find local optima
+      //}while you want more
+      //score the results
+      do{
+        steps++;
+        myTime = newTime;
+        myTree = newTree;
+        myScore = newScore;
+        newTree = myTree.findBestNeighbor();
+        newScore = newTree.getScore();
+        newTime = System.nanoTime();
+        System.out.println("Step Number: " + steps);
+        System.out.println("Time Spent: " + (((double)(newTime - myTime))/1000000000) + " seconds");
+        System.out.println("Score: " + newScore);
+        System.out.println("Score Improvement: " + (newScore/myScore - 1.0));
+        System.out.println("New Tree:\n" + newTree);
+        System.out.println();
+      }while(myTree.compareTo(newTree) > 0);
+      //return the best
+      System.out.println();
+      System.out.println("TOTAL STEPS: " + steps);
+      System.out.println("TOTAL TIME: " + (((double)(newTime - startTime))/1000000000) + " seconds");
+      System.out.println("Final tree: " + myTree);
+      System.out.println("Final Tree Score: " + myTree.getScore());
+      System.out.println("Total Score Improvement: " + (myScore/originalScore - 1.0));
+    }
+  }
 
-    //return the best
-
-    System.out.println("Tree Score: " + myTree.treeScore());
+  public static boolean getGreedy(){
+    return greedy;
   }
 
   public static int taxaCount(File input){

@@ -1,2 +1,26 @@
-Input tree: (((0,1),2),((3,4),5));
-Tree Score: 2.3911599814891815
+Input tree: ((0,(1,(2,3))),(4,5));
+Initial Score: 1.826060026884079
+
+Step Number: 1
+Time Spent: 8.01359E-4 seconds
+Score: 2.4355600476264954
+Score Improvement: 0.3337787431788015
+New Tree:
+Tree: ((0,(3,(2,1))),(4,5));
+Tree Score: 2.4355600476264954
+
+Step Number: 2
+Time Spent: 6.35835E-4 seconds
+Score: 2.4355600476264954
+Score Improvement: 0.0
+New Tree:
+Tree: ((0,(3,(2,1))),(4,5));
+Tree Score: 2.4355600476264954
+
+
+TOTAL STEPS: 2
+TOTAL TIME: 0.001437194 seconds
+Final tree: Tree: ((0,(3,(2,1))),(4,5));
+Tree Score: 2.4355600476264954
+Final Tree Score: 2.4355600476264954
+Total Score Improvement: 0.3337787431788015
