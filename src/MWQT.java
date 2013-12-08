@@ -1,20 +1,29 @@
-import java.io.File;
-import java.io.FileWriter;
 import java.util.Scanner;
 import java.util.ArrayList;
-
 import java.util.HashMap;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-
+/*
+ * MWQT:
+ * Driver class for our __ Algorithm. Iterates over the algorithm a given number
+ * of times and writes out verbose output.
+ */
 public class MWQT{
 
   private static final String QMC_EXE = "/qmc/genTreeAndQuartets-Linux-64";
-  //We used this to switch between random and non random trees for testing.
-  //QMC takes a 1 for random and 0 for not.
+
+  // We used this to switch between random and non random trees for testing.
+  // QMC takes a 1 for random and 0 for not.
   private static final String RANDOM = "1";
+
+  // A boolean value for determining if we are greedy with edge neighbors
+  // or tree neighbors 
   private static boolean greedy = true;
+
+  // The number of iterations to run the algorithm 
   private static int iterations = 1;
 
   public static void main(String[] args){
@@ -32,6 +41,7 @@ public class MWQT{
     int count = taxaCount(inFile);
     HashMap<String, ArrayList<Quartet> > quartets = getQuartets(inFile);
     Tree ourBest = null;
+    //do multiple iterations over many different random starting trees
     for(int i = 0; i < iterations; i++){
       outputBuilder.append("--------------ITERATION " + (i+1) + "--------------\n");
       File qmcFile = new File(callQMC(count));
@@ -57,11 +67,14 @@ public class MWQT{
       long myTime = startTime;
       long newTime = startTime;
       int steps = 0;
-      //do{
-        //generate a tree with QMC
-        //manipulate to find local optima
-      //}while you want more
-      //score the results
+
+      /*
+       * do{
+       * generate a tree with QMC
+       * manipulate to find local optima
+       * } while new tree is better than old tree
+       * score the results
+       */
       do{
         steps++;
         myTime = newTime;
@@ -75,6 +88,7 @@ public class MWQT{
         outputBuilder.append("Score: " + newScore + "\n");
         outputBuilder.append("Score Improvement: " + (newScore/myScore - 1.0) + "\n");
         outputBuilder.append("New Tree:\n" + newTree + "\n\n");
+      //This is the second greedy choice we make, no matter what greedy is set to. We only consider the best tree for our next step
       }while(myTree.compareTo(newTree) > 0);
       //return the best
       if(myTree.compareTo(ourBest) < 0)
@@ -104,28 +118,29 @@ public class MWQT{
     return greedy;
   }
 
+  //breaks the tree into just numbers. We need to know count for making tree
   public static int taxaCount(File input){
-    Scanner in = null;
+    int maxSoFar = 0;
     try{
-      in = new Scanner(input);
+      Scanner in = new Scanner(input);
+      while(in.hasNextLine()){
+        String taxa = in.nextLine().split(";")[0];
+        taxa = taxa.replaceAll("\\(","");
+        taxa = taxa.replaceAll("\\)","");
+        String[] numbers = taxa.split(",");
+        for(String s: numbers){
+          if(maxSoFar < Integer.valueOf(s))
+            maxSoFar = Integer.valueOf(s);
+        }
+      }
+      in.close();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
-    }
-    int maxSoFar = 0;
-    while(in.hasNextLine()){
-      String taxa = in.nextLine().split(";")[0];
-      taxa = taxa.replaceAll("\\(","");
-      taxa = taxa.replaceAll("\\)","");
-      String[] numbers = taxa.split(",");
-      for(String s: numbers){
-        if(maxSoFar < Integer.valueOf(s))
-          maxSoFar = Integer.valueOf(s);
-      }
     }
     return maxSoFar;
   }
 
-//Calls qmc for a random starting tree
+  // Calls qmc for a random starting tree
   public static String callQMC(int taxa){
     taxa++;
     String cwd = System.getProperty("user.dir");
@@ -139,7 +154,7 @@ public class MWQT{
     return cwd + "/qmc/tree-" + taxa + ".dat";
   }
 
-  //Builds a map of the quartets
+  // Builds a map of the quartets
   private static HashMap<String, ArrayList<Quartet> > getQuartets(File inFile){
     Scanner in = null;
     try{
@@ -148,6 +163,9 @@ public class MWQT{
       e.printStackTrace();
     }
     HashMap<String, ArrayList<Quartet> > data = new HashMap<String, ArrayList<Quartet> >();
+    /* A quartet is of the form:
+     * ((A,B),(C,D)); weight
+     */
     while(in.hasNextLine()){
       String line = in.nextLine();
       String[] divided = line.split(";");
@@ -167,6 +185,7 @@ public class MWQT{
         list.add(qt);
         data.put(qt.getName(), list);
     }
+    in.close();
     return data;
   }
 

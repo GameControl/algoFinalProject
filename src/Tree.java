@@ -1,17 +1,24 @@
-import java.io.*;
-import java.util.*;
-import java.lang.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collections;
+import java.lang.Comparable;
 
+/*
+ * Tree:
+ * Class of Edges that represent a tree
+ * It is constructed from a Newick string
+ */
 public class Tree implements Comparable<Tree>{
-  
+
   private ArrayList<Edge> edges;
+  // Newick string that represents tree
   private String myName;
   private double myScore;
 
   private static boolean isGreedy;
-  private static HashMap<String, ArrayList<Quartet> > myQuartets = null;
+  private static HashMap<String, ArrayList<Quartet> > myQuartets;
   private static int mySize;
-  // Adjacency List
 
   public Tree(int size, String name, HashMap<String, ArrayList<Quartet> > quartets, boolean greedy){
     isGreedy = greedy;
@@ -26,17 +33,21 @@ public class Tree implements Comparable<Tree>{
       Edge testEdge = new Edge(adjList, i, size, myName, myQuartets, greedy);
       edges.add(testEdge);
     }
-    myScore = treeScore();
+    // cause I can be anal
+    myScore = 0.0;
+    for(Edge e: edges){
+      myScore += e.getScore();
+    }
   }
 
-  public Tree(String newTree){
+  // private constructor for looking at neighbors
+  private Tree(String newTree){
     this(mySize, newTree, myQuartets, isGreedy);
   }
 
-  public ArrayList<Edge> getEdgeSet(){
-    return edges;
-  }
+  public double getScore(){return myScore;}
 
+  // asks each edge for the trees they can make by using NNI and gets the best
   public Tree findBestNeighbor(){
     ArrayList<Edge> options = new ArrayList<Edge>();
     for(Edge e: edges){
@@ -44,11 +55,9 @@ public class Tree implements Comparable<Tree>{
     }
     ArrayList<Tree> treeOptions = new ArrayList<Tree>();
     for(Edge e: options){
-//      System.out.println(e.getTree());
       treeOptions.add(new Tree(e.getTree()));
     }
     Collections.sort(treeOptions);
-    //System.out.println(treeOptions);
     if(!treeOptions.isEmpty()){
       Tree best = treeOptions.get(0);
       if(best.compareTo(this) < 0)
@@ -57,16 +66,7 @@ public class Tree implements Comparable<Tree>{
     return this;
   }
 
-  public double getScore(){return myScore;}
-
-  private double treeScore(){
-    double score = 0.0;
-    for(Edge e: edges){
-      score += e.getScore();
-    }
-    return score;
-  }
-
+  // A driver method for parsing the tree
   private static void startParse(Map<Integer, ArrayList<Integer> > adjList, String tree, int taxaCount, int[] internalCount){
     int[] vCount = {0};
     internalCount[0] = countInternal(tree);
@@ -82,6 +82,10 @@ public class Tree implements Comparable<Tree>{
     fixRoot(adjList, internalCount[0]);
   }
 
+  /*
+   * Removes the "traditional" root of the tree, and adds an edge between its children.
+   * This modification is to allow us to generalize our approach.
+   */
   private static void fixRoot(Map<Integer, ArrayList<Integer> > adjList, int internalCount){
     Integer rootName = internalCount * 2;
     ArrayList<Integer> root = adjList.get(rootName);
@@ -94,6 +98,9 @@ public class Tree implements Comparable<Tree>{
     adjList.remove(rootName);
   }
 
+  /*
+   * Recurses through the Newick string Post-order and builds an adjacency list to represent the tree
+   */
   private static String parseTree(String str, int internalCount, int[] vCount, Map<Integer, ArrayList<Integer> > adjList){
     Integer left = null;
     Integer right = null;
@@ -146,12 +153,14 @@ public class Tree implements Comparable<Tree>{
         else
           a.add(right);
       }
+      // Add an internal vertex to the adjacency list
       adjList.put(vCount[0], a);
       vCount[0]++;
     }
     return str;
   }
 
+  // Labels the parents of all vertices in the adjacency list.
   private static void labelParents(Map<Integer, ArrayList<Integer> > adjList, int internalCount){
     for (Map.Entry<Integer, ArrayList<Integer> > entry : adjList.entrySet()) {
       Integer key = entry.getKey();
@@ -170,7 +179,7 @@ public class Tree implements Comparable<Tree>{
     }
   }
 
-
+  // Computes a count for the number of edges in the tree
   private static int countInternal(String tree){
   	int count = 0;
   	while(tree.length() > 1){
@@ -181,6 +190,7 @@ public class Tree implements Comparable<Tree>{
   	return count;
   }
 
+  // A helper method for labeling a case where an internal vertex had subtrees for both its children.
   private static void labelInternalChild(Integer node, int[] depth, int internalCount, Map<Integer, ArrayList<Integer> > adjList){
     if(node > internalCount){
       Integer leftChild = adjList.get(node).get(0);
@@ -204,18 +214,17 @@ public class Tree implements Comparable<Tree>{
 
   @Override
   public String toString(){
-    return "Tree: " + myName + "\nTree Score: " + this.treeScore() ;
+    return "Tree: " + myName + "\nTree Score: " + this.myScore;
   }
 
   @Override
   public int compareTo(Tree t) {
-    double diff = this.treeScore() - t.treeScore();
+    double diff = this.myScore - t.myScore;
     if(diff == 0.0)
       return 0;
     if(diff > 0.0)
       return -1;
     return 1;
-
   }
 
 }

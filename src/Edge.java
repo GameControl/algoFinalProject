@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.lang.Comparable;
+
 /*
            A
             \
@@ -15,9 +16,16 @@ import java.lang.Comparable;
                 C    D
 */
 
+/*
+ * Edge:
+ * A set representation of an edge as represented by the wonderful ASCII art above.
+ * Sets {A,B,C,D} are lists of all leaves beneath neighboring edges. Each edge has a value
+ * equal to the sum of the weights of all quartets it satisfies.
+ */
 public class Edge implements Comparable<Edge>{
 
-  private static HashMap<String, ArrayList<Quartet> > quartets = null;
+  private static boolean greedy;
+  private static HashMap<String, ArrayList<Quartet> > quartets;
   private String name;
   private ArrayList<Integer> a;
   private ArrayList<Integer> b;
@@ -28,16 +36,18 @@ public class Edge implements Comparable<Edge>{
   private String cSubtree;
   private String dSubtree;
   private double value;
-  private boolean greedy;
 
   public Edge(HashMap<Integer, ArrayList<Integer> > adjList, Integer bottomVertex, int leafCount, String ogTree, HashMap<String, ArrayList<Quartet> > quartetSet, boolean isGreedy){
     greedy = isGreedy;
     quartets = quartetSet;
+    value = 0;
+
     a = new ArrayList<Integer>();
     b = new ArrayList<Integer>();
     c = new ArrayList<Integer>();
     d = new ArrayList<Integer>();
-    value = 0;
+    
+
     Integer topVertex = adjList.get(bottomVertex).get(2);
     name = topVertex + "|" + bottomVertex;
     Integer bnode;
@@ -57,24 +67,12 @@ public class Edge implements Comparable<Edge>{
     }
     changeScore();
     setSubstrings(ogTree);
-
   }
 
-  public Edge(Edge input){
-    this.name = input.name;
-    this.a = new ArrayList<Integer>(input.a);
-    this.b = new ArrayList<Integer>(input.b);
-    this.c = new ArrayList<Integer>(input.c);
-    this.d = new ArrayList<Integer>(input.d);
-    this.structure = input.structure;
-    this.bSubtree = input.bSubtree;
-    this.cSubtree = input.cSubtree;
-    this.dSubtree = input.dSubtree;
-    this.value = input.value;
-  }
-
-//if swapType == true, switch B and C
-//if swapType == false, switch B and D
+  /*
+   * if swapType == true, switch B and C
+   * if swapType == false, switch B and D
+   */
   private Edge(Edge input, boolean swapType){
     this.name = input.name;
     this.a = new ArrayList<Integer>(input.a);
@@ -98,12 +96,9 @@ public class Edge implements Comparable<Edge>{
     changeScore();
   }
 
+  public double getScore(){ return value; }
 
-
-  public double getScore(){return value;}
-
-//true adds
-//false subtracts
+  // Evaluates this edge's score based off the sum of the weights of quartets it satisfies.
   public void changeScore(){
     this.value = 0;
     for(String s: quartets.keySet()){
@@ -115,24 +110,23 @@ public class Edge implements Comparable<Edge>{
     }
   }
 
+  // Returns the Newick string format of this edge's tree.
   public String getTree(){
     String newTree = new String(structure);
-//    System.out.println(newTree);
+
     int b = newTree.indexOf('B');
     newTree = newTree.substring(0, b) + bSubtree + newTree.substring(b+1);
-//    System.out.println(newTree);
 
     int c = newTree.indexOf('C');
     newTree = newTree.substring(0, c) + cSubtree + newTree.substring(c+1);
-//    System.out.println(newTree);
 
     int d = newTree.indexOf('D');
     newTree = newTree.substring(0, d) + dSubtree + newTree.substring(d+1);
-//    System.out.println(newTree);
 
     return newTree;
   }
 
+  // A recursive method which adds leafs to the given bucket "set".
   private static void listMaker(ArrayList<Integer> bucket , HashMap<Integer, ArrayList<Integer> > adjList, Integer node){
     ArrayList<Integer> myNode = adjList.get(node);
     if(myNode.get(0) == null)
@@ -143,10 +137,7 @@ public class Edge implements Comparable<Edge>{
     }
   }
 
-  public String toString(){
-    return "EDGE: " + name + "\n" + "a: " + a+ "\n" + "b: " + b+ "\n" + "c: " + c+ "\n" + "d: " + d + "\n" + "Score: " + value + "\n";
-  }
-
+  // Computes if this edge satisfies the given quartet.
   public boolean satisfies(Quartet quartet){
     Integer[] below = quartet.below();
     Integer[] above = quartet.above();
@@ -159,6 +150,13 @@ public class Edge implements Comparable<Edge>{
     return false;
   }
 
+  /* Generates neighbor list, has 2 types of output.
+   * greedy is a big part of eliminating cases that are not better for 
+   * this edge. This is to potentially speed up the program
+   * 1) if greedy then only returns the swap that is best for this edge
+   *    returns an empty list if neither is better for the edge
+   * 2) if not then returns both swaps that could be done around this edge
+   */
   public ArrayList<Edge> getNeighbor(){
     Edge swapC = new Edge(this, true);
     Edge swapD = new Edge(this, false);
@@ -176,57 +174,37 @@ public class Edge implements Comparable<Edge>{
       output.add(swapC);
       output.add(swapD);
     }
-    // System.out.println(this);
-    // System.out.println(swapC);
-    // System.out.println(swapD);
     return output;
 
   }
 
+  //Initializes substring variables for each tree
   private void setSubstrings(String intree){
     String tree = new String(intree);
     int[] index = {0,0};
 
-//    System.out.println("Initial Tree: " + tree);
-//    System.out.println("Set A: " + a);
-//    System.out.println("Set B: " + b);
-//    System.out.println("Set C: " + c);
-//    System.out.println("Set D: " + d);
     subtreeHelper(b , tree, index);
-    /*if(index[1] == -1 ||index[0] == -1){
-      System.out.println(b);
-      System.out.println(tree);
-
-      System.out.println("NEGATIVE VALS!!!!!");
-    }*/
     bSubtree = tree.substring(index[0] , index[1]);
     tree = tree.substring(0,index[0]) + "B" + tree.substring(index[1]);
 
-//    System.out.println("BTree: " + tree);
-//    System.out.println("bSubtree: " + bSubtree);
     subtreeHelper(c , tree, index);
     cSubtree = tree.substring(index[0] , index[1]);
     tree = tree.substring(0,index[0]) + "C" + tree.substring(index[1]);
 
-//    System.out.println("CTree: " + tree);
-//    System.out.println("cSubtree: " + cSubtree);
     subtreeHelper(d , tree, index);
     dSubtree = tree.substring(index[0] , index[1]);
     tree = tree.substring(0,index[0]) + "D" + tree.substring(index[1]);
 
-//    System.out.println("DTree: " + tree);
-//    System.out.println("dSubtree: " + dSubtree);
     structure = tree;
   }
 
+  // Debug printout
   private void printData(String in, int[] nums){
     System.out.println("TREE: " + in);
     System.out.println("Start: " + nums[0] + "   End: " + nums[1]);
   }
 
-
-  // indices[0] = the index of the first leaf for the given set
-  // indices[1] = the index of the last leaf for the given set
+  //gets the indices of the stubtree induced from a set(a,b,c,d)
   private void subtreeHelper(ArrayList<Integer> set, String tree, int[] indices){
     indices[0] = Integer.MAX_VALUE;
     indices[1] = -1;
@@ -246,22 +224,20 @@ public class Edge implements Comparable<Edge>{
           indices[1] = locA;
       }
     }
-    //indicies on either side of just the number
+    // indicies on either side of just the number
     indices[1]++;
     indices[0]++;
 
-    //find last digit of last number
+    // find last digit of last number
     while(tree.charAt(indices[1])!= ',' && tree.charAt(indices[1])!= ')' && tree.charAt(indices[1])!= ';'){
       indices[1]++;
     }
-    //if a leaf, we are done
+    // if a leaf, we are done
     if(set.size()==1){
       return;
     }
     indices[1]--;
-//    System.out.println("CharAT0: " + tree.charAt(indices[0]));
-//    System.out.println("CharAT1: " + tree.charAt(indices[1]));
-    //ok now the fun part, get the subtree
+    // ok now the fun part, get the subtree
     int open = 0;
     int closed = 0;
     boolean alreadyOpen = false;
@@ -281,27 +257,16 @@ public class Edge implements Comparable<Edge>{
         open++;
       }
     }
-//    System.out.println("open: " + open);
-//    System.out.println("closed: " + closed);
-    // if(open == 0 || closed == 0)
-    //   throw new RuntimeException();
-//    System.out.println("indice 0: " + indices[0]);
-//    System.out.println("indice 1: " + indices[1]);
+
     indices[0] -= (closed + 1);
     indices[1] += (open + 2 );
-//    System.out.println("indice 0: " + indices[0]);
-//    System.out.println("indice 1: " + indices[1]);
-    // if(set.size()>3){
-    //   indices[0]--;
-    //   indices[1]++;
-    // }
+
+    // Unknown bug bandaid, fixes an odd case where the subtree ends up with extra
+    // characters on both sides including a comma
     if((tree.charAt(indices[1]-1) == ',') || (tree.charAt(indices[0]) == ',')){
-//      System.out.println("COMMA FOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       indices[0]++;
       indices[1]--;
-
     }
-
   }
 
   @Override
@@ -312,6 +277,9 @@ public class Edge implements Comparable<Edge>{
     if(diff > 0.0)
       return 1;
     return -1;
+  }
 
+  public String toString(){
+    return "EDGE: " + name + "\n" + "a: " + a+ "\n" + "b: " + b+ "\n" + "c: " + c+ "\n" + "d: " + d + "\n" + "Score: " + value + "\n";
   }
 }
