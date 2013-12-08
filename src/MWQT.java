@@ -36,77 +36,91 @@ public class MWQT{
       if(args[3].equals("-p"))
         greedy = false;
     }
-    StringBuilder outputBuilder = new StringBuilder();
-    File inFile = new File(args[0]);
-    int count = taxaCount(inFile);
-    HashMap<String, ArrayList<Quartet> > quartets = getQuartets(inFile);
-    Tree ourBest = null;
-    //do multiple iterations over many different random starting trees
-    for(int i = 0; i < iterations; i++){
-      outputBuilder.append("--------------ITERATION " + (i+1) + "--------------\n");
-      File qmcFile = new File(callQMC(count));
-      String treeNewick = "";
-      try {
-        Scanner scanner = new Scanner(new File(callQMC(count)));
-        treeNewick = scanner.nextLine();
-        scanner.close();
-      } 
-      catch (FileNotFoundException e) {
-          e.printStackTrace();
-      }
-      Tree myTree = new Tree(count, treeNewick, quartets, greedy);
-      if(ourBest==null)
-        ourBest = myTree;
-      double originalScore = myTree.getScore();
-      outputBuilder.append("Input tree: " + treeNewick + "\n");
-      outputBuilder.append("Initial Score: " + originalScore + "\n\n");
-      Tree newTree = myTree;
-      double myScore = originalScore; 
-      double newScore = myScore;
-      long startTime = System.nanoTime();
-      long myTime = startTime;
-      long newTime = startTime;
-      int steps = 0;
-
-      /*
-       * do{
-       * generate a tree with QMC
-       * manipulate to find local optima
-       * } while new tree is better than old tree
-       * score the results
-       */
-      do{
-        steps++;
-        myTime = newTime;
-        myTree = newTree;
-        myScore = newScore;
-        newTree = myTree.findBestNeighbor();
-        newScore = newTree.getScore();
-        newTime = System.nanoTime();
-        outputBuilder.append("Step Number: " + steps + "\n");
-        outputBuilder.append("Time Spent: " + (((double)(newTime - myTime))/1000000000) + " seconds\n");
-        outputBuilder.append("Score: " + newScore + "\n");
-        outputBuilder.append("Score Improvement: " + (newScore/myScore - 1.0) + "\n");
-        outputBuilder.append("New Tree:\n" + newTree + "\n\n");
-      //This is the second greedy choice we make, no matter what greedy is set to. We only consider the best tree for our next step
-      }while(myTree.compareTo(newTree) > 0);
-      //return the best
-      if(myTree.compareTo(ourBest) < 0)
-        ourBest = myTree;
-      outputBuilder.append("\n");
-      outputBuilder.append("TOTAL STEPS: " + steps + "\n");
-      outputBuilder.append("TOTAL TIME: " + (((double)(newTime - startTime))/1000000000) + " seconds\n");
-      outputBuilder.append("Final tree: " + myTree + "\n");
-      outputBuilder.append("Final Tree Score: " + myTree.getScore() + "\n");
-      outputBuilder.append("Total Score Improvement: " + (myScore/originalScore - 1.0) + "\n\n");
-    }
-    outputBuilder.append("===========================================================\n");
-    outputBuilder.append("RESULTS FROM " + iterations + " ITERATION(S):\n");
-    outputBuilder.append("BEST " + ourBest + "\n");
-    outputBuilder.append("BEST TREE SCORE: " + ourBest.getScore() + "\n");
     try{
       FileWriter fw = new FileWriter(args[1]);
-      fw.write(outputBuilder.toString());
+
+      StringBuilder outputBuilder = new StringBuilder();
+      File inFile = new File(args[0]);
+      int count = taxaCount(inFile);
+      HashMap<String, ArrayList<Quartet> > quartets = getQuartets(inFile);
+      Tree ourBest = null;
+      long totalTime = 0;
+      double totalImprovement = 0.0;
+      double bestsImprovement = 0.0;
+      //do multiple iterations over many different random starting trees
+      for(int i = 0; i < iterations; i++){
+        outputBuilder.append("--------------ITERATION " + (i+1) + "--------------\n");
+        File qmcFile = new File(callQMC(count));
+        String treeNewick = "";
+        try {
+          Scanner scanner = new Scanner(new File(callQMC(count)));
+          treeNewick = scanner.nextLine();
+          scanner.close();
+        } 
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Tree myTree = new Tree(count, treeNewick, quartets, greedy);
+        if(ourBest==null)
+          ourBest = myTree;
+        double originalScore = myTree.getScore();
+        outputBuilder.append("Input tree: " + treeNewick + "\n");
+        outputBuilder.append("Initial Score: " + originalScore + "\n\n");
+        Tree newTree = myTree;
+        double myScore = originalScore; 
+        double newScore = myScore;
+        long startTime = System.nanoTime();
+        long myTime = startTime;
+        long newTime = startTime;
+        int steps = 0;
+
+        /*
+         * do{
+         * generate a tree with QMC
+         * manipulate to find local optima
+         * } while new tree is better than old tree
+         * score the results
+         */
+        do{
+          steps++;
+          myTime = newTime;
+          myTree = newTree;
+          myScore = newScore;
+          newTree = myTree.findBestNeighbor();
+          newScore = newTree.getScore();
+          newTime = System.nanoTime();
+          long deltaTime = newTime - myTime;
+          double deltaScore = (newScore/myScore - 1.0);
+          outputBuilder.append("Step Number: " + steps + "\n");
+          outputBuilder.append("Time Spent: " + (deltaTime/1000000000.0) + " seconds\n");
+          outputBuilder.append("New Tree:\n" + newTree + "\n");
+          outputBuilder.append("Score Improvement: " + deltaScore + "\n\n");
+        //This is the second greedy choice we make, no matter what greedy is set to. We only consider the best tree for our next step
+        }while(myTree.compareTo(newTree) > 0);
+        //return the best
+        if(myTree.compareTo(ourBest) < 0){
+          ourBest = myTree;
+          bestsImprovement = (ourBest.getScore()/originalScore - 1.0);
+        }
+        long deltaTime = newTime - startTime;
+        totalTime += deltaTime;
+        double deltaScore = (myTree.getScore()/originalScore - 1.0);
+        totalImprovement += deltaScore;
+        outputBuilder.append("TOTAL STEPS: " + steps + "\n");
+        outputBuilder.append("TOTAL TIME: " + ((newTime - startTime)/1000000000.0) + " seconds\n");
+        outputBuilder.append("Final tree: " + myTree + "\n");
+        outputBuilder.append("Total Score Improvement: " + deltaScore + "\n\n");
+        fw.append(outputBuilder.toString());
+        outputBuilder = new StringBuilder();
+      }
+      outputBuilder.append("===========================================================\n");
+      outputBuilder.append("RESULTS FROM " + iterations + " ITERATION(S):\n");
+      outputBuilder.append("AVERAGE TIME PER RUN: " + (totalTime/iterations)/1000000000.0 + " seconds\n");
+      outputBuilder.append("AVERAGE IMPROVEMENT: " + totalImprovement/iterations + "\n");
+      outputBuilder.append("BEST " + ourBest + "\n");
+      outputBuilder.append("BEST'S IMPROVEMENT :" + bestsImprovement + "\n");
+      fw.append(outputBuilder.toString());
+      outputBuilder = new StringBuilder();
       fw.close();
     }
     catch (Exception e) {
